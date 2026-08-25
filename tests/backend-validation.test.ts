@@ -18,6 +18,7 @@ import {
   createCloudinarySignature,
   getMediaReferenceTotal,
 } from "@/server/media/cloudinary";
+import { shouldAttemptRateLimitCleanup } from "@/server/rate-limit";
 
 const validProject = {
   title: "A valid project",
@@ -131,6 +132,12 @@ describe("backend boundary validation", () => {
     ).toBe(false);
   });
 
+  it("schedules rate-limit cleanup only after its controlled interval", () => {
+    const now = new Date("2026-08-25T00:00:00.000Z");
+    expect(shouldAttemptRateLimitCleanup(now, now.getTime() - 1)).toBe(true);
+    expect(shouldAttemptRateLimitCleanup(now, now.getTime() + 1)).toBe(false);
+  });
+
   it("validates runtime and migration database environment shapes", () => {
     const pooled = "postgresql://user:password@example.neon.tech/portfolio";
     const direct = "postgresql://user:password@example.neon.tech/portfolio";
@@ -219,6 +226,20 @@ describe("backend boundary validation", () => {
     expect(productionEnvironmentSchema.safeParse(production).success).toBe(
       true,
     );
+    expect(
+      productionEnvironmentSchema.safeParse({
+        ...production,
+        RESEND_API_KEY: undefined,
+        INQUIRY_NOTIFICATION_EMAIL: undefined,
+        INQUIRY_FROM_EMAIL: undefined,
+      }).success,
+    ).toBe(true);
+    expect(
+      productionEnvironmentSchema.safeParse({
+        ...production,
+        INQUIRY_FROM_EMAIL: undefined,
+      }).success,
+    ).toBe(false);
     expect(
       productionEnvironmentSchema.safeParse({
         ...production,

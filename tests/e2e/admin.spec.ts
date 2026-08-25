@@ -4,7 +4,6 @@ import { readFileSync } from "node:fs";
 
 const adminEmail = process.env.E2E_ADMIN_EMAIL;
 const adminPassword = process.env.E2E_ADMIN_PASSWORD;
-const authenticatedQaAvailable = Boolean(adminEmail && adminPassword);
 const cloudinaryQaAvailable = Boolean(
   process.env.CLOUDINARY_CLOUD_NAME &&
   process.env.CLOUDINARY_API_KEY &&
@@ -79,11 +78,6 @@ test("invalid login stays generic and public signup is unavailable", async ({
 test("authenticated admin navigation and logout invalidate access", async ({
   page,
 }) => {
-  test.skip(
-    !authenticatedQaAvailable,
-    "Set E2E_ADMIN_EMAIL and E2E_ADMIN_PASSWORD for the bootstrapped development admin.",
-  );
-
   await page.goto("/admin/login");
   await page.getByLabel("Email").fill(adminEmail!);
   await page.getByLabel("Password").fill(adminPassword!);
@@ -116,10 +110,6 @@ test("authenticated admin navigation and logout invalidate access", async ({
 test("contact inquiry is stored and moves through the admin workflow", async ({
   page,
 }) => {
-  test.skip(
-    !authenticatedQaAvailable || !process.env.DATABASE_URL,
-    "Set E2E admin credentials and the confirmed development DATABASE_URL.",
-  );
   const email = `phase-8-inquiry-${Date.now()}@example.com`;
   const sql = neon(process.env.DATABASE_URL!);
 
@@ -200,10 +190,6 @@ test("contact inquiry is stored and moves through the admin workflow", async ({
 test("admin can create, publish, update, archive, and delete a project", async ({
   page,
 }) => {
-  test.skip(
-    !authenticatedQaAvailable,
-    "Set E2E admin credentials for CMS workflow QA.",
-  );
   const slug = `phase-7-qa-${Date.now()}`;
   await page.goto("/admin/login");
   await page.getByLabel("Email").fill(adminEmail!);
@@ -306,7 +292,7 @@ test("admin can upload and safely delete an unused Cloudinary image", async ({
   page,
 }) => {
   test.skip(
-    !authenticatedQaAvailable || !cloudinaryQaAvailable,
+    !cloudinaryQaAvailable,
     "Set E2E admin and Cloudinary credentials for live media QA.",
   );
   const altText = `Phase 7 Cloudinary QA ${Date.now()}`;

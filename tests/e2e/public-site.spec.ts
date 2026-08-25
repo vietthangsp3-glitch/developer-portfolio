@@ -299,7 +299,11 @@ test("public not-found and metadata endpoints fail safely", async ({
 
   const sitemap = await request.get("/sitemap.xml");
   expect(sitemap.ok()).toBe(true);
-  expect(await sitemap.text()).toContain("http://localhost:3000/work");
+  const expectedWorkUrl = new URL(
+    "/work",
+    process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
+  ).toString();
+  expect(await sitemap.text()).toContain(expectedWorkUrl);
 });
 
 test("security headers are present without prematurely enforcing CSP", async ({

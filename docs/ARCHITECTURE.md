@@ -11,7 +11,7 @@ This is one Next.js application deployed to Vercel, with two intentionally diffe
 - A public, content-led portfolio optimized for static delivery, SEO, accessibility, and small client bundles.
 - A private, utility-led admin CMS optimized for safe content management rather than visual spectacle.
 
-Neon PostgreSQL is the system of record. Drizzle owns application schema and queries. Better Auth owns admin authentication and database sessions. Resend sends inquiry notifications. Cloudinary stores and transforms portfolio media. Server Components render by default; narrowly scoped Client Components provide forms, menus, and motion.
+Neon PostgreSQL is the system of record. Drizzle owns application schema and queries. Better Auth owns admin authentication and database sessions. Resend optionally sends inquiry notifications when a complete verified sender is configured. Cloudinary stores and transforms portfolio media. Server Components render by default; narrowly scoped Client Components provide forms, menus, and motion.
 
 The public site must work without JavaScript for reading and navigation wherever Next.js permits. Animation is progressive enhancement. Admin mutations and contact submission use Server Actions; explicit HTTP endpoints exist only where a provider or protocol requires them.
 
@@ -25,7 +25,7 @@ The repository now has its approved public experience and Phase 6 auth/admin fou
 - The homepage and all public routes use centralized typed fixtures; six static case studies render through a discriminated content-block model.
 - Local generated project media is delivered through `next/image` with explicit aspect ratios and responsive `sizes`.
 - Editorial project layouts alternate wide and standard media contracts without changing the typed content model.
-- Playwright covers public route rendering, supported-width overflow, mobile dialog focus, and static form semantics.
+- Playwright separates safe public/read-only coverage from authenticated mutations. The admin suite refuses production and requires explicit development confirmation, credentials, and an exact expected Neon hostname.
 - GSAP is dynamically imported inside scoped leaf Client Components for the hero, selected-work, featured-case-study, and closing-contact reveals.
 - The homepage hero is an identity-led first viewport: the configured owner name forms the primary visual object, while compact role, introduction, and selected-work metadata provide context without agency-style sales framing.
 - Each major hero-name word owns a small dependency-free scramble island. The visual layer is ignored by assistive technology, retains stable width, runs only for precise hover pointers, and always resolves to the original text.
@@ -49,102 +49,49 @@ Folders are created only when their phase begins; this is the intended mature tr
 
 ```text
 .
-├── docs/
-│   ├── ARCHITECTURE.md
-│   └── IMPLEMENTATION_PLAN.md
-├── drizzle/
-│   ├── meta/
-│   └── *.sql
-├── public/
-│   ├── fonts/                    # only if a future local font is approved
-│   ├── images/
-│   └── social/
+├── docs/                         # architecture, implementation, production runbook
+├── drizzle/                      # reviewed SQL migrations and metadata
+├── public/images/                # local fallback and seeded project media
+├── scripts/                      # guarded production/auth commands
 ├── src/
 │   ├── app/
-│   │   ├── (site)/
-│   │   │   ├── about/page.tsx
-│   │   │   ├── contact/page.tsx
-│   │   │   ├── services/page.tsx
-│   │   │   ├── work/
-│   │   │   │   ├── [slug]/page.tsx
-│   │   │   │   └── page.tsx
-│   │   │   ├── layout.tsx
-│   │   │   └── page.tsx
-│   │   ├── (admin)/
-│   │   │   └── admin/
-│   │   │       ├── (auth)/login/page.tsx
-│   │   │       ├── (panel)/
-│   │   │       │   ├── inquiries/page.tsx
-│   │   │       │   ├── media/page.tsx
-│   │   │       │   ├── projects/page.tsx
-│   │   │       │   ├── services/page.tsx
-│   │   │       │   ├── settings/page.tsx
-│   │   │       │   ├── testimonials/page.tsx
-│   │   │       │   ├── layout.tsx
-│   │   │       │   └── page.tsx
-│   │   │       └── layout.tsx
+│   │   ├── (site)/               # public pages and shell
+│   │   ├── (admin)/admin/
+│   │   │   ├── login/            # only public admin route
+│   │   │   └── (protected)/      # dashboard and CMS routes
 │   │   ├── api/
-│   │   │   ├── auth/[...all]/route.ts
-│   │   │   └── media/sign/route.ts
+│   │   │   ├── auth/[...all]/
+│   │   │   ├── csp-report/
+│   │   │   └── media/sign/
 │   │   ├── error.tsx
-│   │   ├── favicon.ico
 │   │   ├── global-error.tsx
 │   │   ├── globals.css
+│   │   ├── icon.svg
 │   │   ├── layout.tsx
 │   │   ├── manifest.ts
 │   │   ├── not-found.tsx
-│   │   ├── opengraph-image.tsx
 │   │   ├── robots.ts
 │   │   └── sitemap.ts
-│   ├── components/
-│   │   ├── animation/            # reveal primitives and motion boundary
-│   │   ├── layout/               # public header, navigation, footer, shell
-│   │   └── ui/                   # button, link, field, container, typography
-│   ├── config/
-│   │   ├── env.ts
-│   │   └── site.ts
-│   ├── features/
-│   │   ├── admin/
-│   │   │   ├── actions/
-│   │   │   ├── components/
-│   │   │   └── schemas/
-│   │   ├── contact/
-│   │   │   ├── actions/
-│   │   │   ├── components/
-│   │   │   └── schemas/
-│   │   ├── projects/
-│   │   │   ├── actions/
-│   │   │   ├── components/
-│   │   │   ├── schemas/
-│   │   │   └── types.ts
-│   │   ├── services/
-│   │   └── testimonials/
-│   ├── hooks/                    # browser hooks only; add on demand
+│   ├── components/               # shared animation, layout, SEO, and UI primitives
+│   ├── config/                   # environment, production, site, SEO, and fonts
+│   ├── features/                 # admin, auth, content, home, inquiries, media,
+│   │                             # projects, services, settings, testimonials, audit
+│   ├── lib/                      # cross-feature validation
 │   ├── server/
 │   │   ├── auth/
-│   │   ├── db/
-│   │   │   ├── queries/
-│   │   │   ├── index.ts
-│   │   │   └── schema.ts
+│   │   ├── dal/
+│   │   ├── db/schema/
 │   │   ├── email/
 │   │   ├── media/
 │   │   ├── rate-limit/
 │   │   └── security/
-│   ├── types/
-│   ├── proxy.ts
-│   └── utils/
-├── tests/
-│   ├── e2e/
-│   ├── integration/
-│   └── unit/
-├── .env.example
-├── AGENTS.md
-├── CLAUDE.md
-├── README.md
+│   └── proxy.ts
+├── tests/                         # Vitest plus split public/admin Playwright suites
+├── playwright.config.ts          # public/read-only E2E
+├── playwright.admin.config.ts    # guarded authenticated/mutating E2E
 ├── drizzle.config.ts
 ├── next.config.ts
-├── package.json
-└── tsconfig.json
+└── package.json
 ```
 
 `src/components` contains genuinely shared UI. Feature-specific components remain inside their feature. `src/server` is a `server-only` boundary and owns secrets, database access, auth verification, email, media signing, and abuse prevention. Route files stay thin.
@@ -176,6 +123,8 @@ Use Server Actions for same-origin contact and CMS forms. Each action performs t
 3. Apply rate limiting if applicable.
 4. Authenticate and authorize if private.
 5. Call a `server-only` service/DAL function inside a transaction where needed.
+   Project content and all technology/media relations use one Neon HTTP batch
+   transaction; audit and cache invalidation occur only after it succeeds.
 6. Write an audit event for admin mutations.
 7. Invalidate relevant cache paths/tags only after commit.
 8. Return a small discriminated result with safe messages.
@@ -335,8 +284,9 @@ Use separate Neon branches/databases for local development, preview/staging, and
 
 Before any production mutation, `production:check` validates a complete HTTPS
 origin, exact auth-origin alignment, a matched Neon pooled/direct pair, distinct
-auth/HMAC secrets, and complete Cloudinary/Resend configuration without printing
-secret values. Initial content import and administrator bootstrap each require
+auth/HMAC secrets, complete Cloudinary configuration, and either a complete
+Resend configuration or none without printing secret values. Initial content
+import and administrator bootstrap each require
 their own production confirmation plus the exact expected Neon hostname. The
 operator sequence and recovery path live in `docs/PRODUCTION_RUNBOOK.md`.
 
@@ -387,6 +337,8 @@ lazily, so unrelated static routes do not require a database at build time.
 `site_settings` is one constrained structured row rather than an open-ended
 key/value CMS: explicit columns cover identity, availability, contact, social
 links, and SEO defaults, while the fixed `default` key enforces the singleton.
+One cached resolver applies these values to public metadata, JSON-LD, header,
+footer, and Contact, with `src/config/site.ts` as the static fallback.
 Auth-linked actor/creator columns remain nullable and now reference Better Auth's
 user table with `ON DELETE SET NULL`, preserving audit/content history.
 
@@ -435,21 +387,21 @@ password and refuses production execution.
 
 ### Contact flow
 
-`FormData → normalize → Zod → honeypot → atomic rate limit → store inquiry → attempt Resend notification → safe result`.
+`FormData → normalize → Zod → honeypot → atomic rate limit → store inquiry → optionally attempt Resend notification → safe result`.
 
-The stored inquiry is authoritative. A transient Resend failure does not discard
-a valid lead; it records `failed` delivery and permits an explicit audited admin
-retry. The notification is plain text, sent from a verified domain, and uses the
-validated visitor email as `replyTo`. No confirmation email is sent to the
-visitor.
+The stored inquiry is authoritative. With Resend disabled, it records
+`not_requested` and remains fully manageable in admin. A transient provider
+failure records `failed` and permits an explicit audited retry. When enabled,
+the notification is plain text, sent from a verified domain, and uses the
+validated visitor email as `replyTo`. No confirmation email is sent to the visitor.
 
 ### Atomic rate limiting
 
-Use a short fixed-window Postgres upsert keyed by `scope`, HMAC identifier, and window start. A single `INSERT ... ON CONFLICT ... DO UPDATE ... WHERE count < limit RETURNING` decides admission atomically. Contact allows four validated attempts per 15 minutes. On Vercel, the platform-supplied `x-vercel-forwarded-for` value is immediately HMAC-derived and discarded; local development uses one synthetic identity. No raw IP is stored or logged. Apply separate policies to login, media signing, and other sensitive mutations. Expired rows are periodically deleted. Return generic errors and `Retry-After` where the transport supports it.
+Use a short fixed-window Postgres upsert keyed by `scope`, HMAC identifier, and window start. A single `INSERT ... ON CONFLICT ... DO UPDATE ... WHERE count < limit RETURNING` decides admission atomically. Contact allows four validated attempts per 15 minutes. On Vercel, the platform-supplied `x-vercel-forwarded-for` value is immediately HMAC-derived and discarded; local development uses one synthetic identity. No raw IP is stored or logged. Apply separate policies to login, media signing, and other sensitive mutations. Expired rows are opportunistically deleted in batches of at most 250, gated to one attempt per five minutes per runtime instance. Return generic errors and `Retry-After` where the transport supports it.
 
 ### Cloudinary media
 
-Admin requests a narrow server signature for a predetermined folder and transformation contract, then uploads directly to Cloudinary to avoid routing large files through Vercel. The server records the returned asset only after validating the signed response/public ID. Destruction and metadata changes are server-only.
+Admin requests a narrow server signature for a predetermined folder and transformation contract, then uploads directly to Cloudinary to avoid routing large files through Vercel. The server records the returned asset only after validating the signed response/public ID. Deletion first atomically removes only an unreferenced database row, so new foreign-key references cannot attach, then deletes the provider asset. Provider failure restores the database metadata; an unlikely restore conflict can still leave an unreferenced provider orphan for manual reconciliation, never a published broken database reference. Destruction and metadata changes are server-only.
 
 Allow JPEG, PNG, WebP, and AVIF; verify signature/content rather than trusting browser MIME. Initial limits: 10 MB, 600–6000px per dimension, images only. Reject SVG and active formats. Generate safe public IDs, strip or avoid sensitive metadata, require meaningful alt text before publication, store dimensions, and deliver through configured `next/image` `remotePatterns` with responsive `sizes` and transformations.
 

@@ -1,7 +1,11 @@
 import "server-only";
 
-import { and, asc, desc, eq, ne, sql } from "drizzle-orm";
+import { randomUUID } from "node:crypto";
 
+import { and, asc, desc, eq, ne, notExists, or, sql } from "drizzle-orm";
+
+import { canonicalizeTechnologies } from "@/features/admin/technology";
+import { entityIdSchema } from "@/lib/validation";
 import type { ProjectAdminInput } from "@/server/dal/cms-types";
 import { assertAdmin } from "@/server/auth/session";
 import { getDatabase } from "@/server/db";
@@ -45,10 +49,12 @@ export async function listAdminTechnologies() {
 
 export async function getAdminProject(id: string) {
   await assertAdmin();
+  const parsedId = entityIdSchema.safeParse(id);
+  if (!parsedId.success) return null;
   const [project] = await getDatabase()
     .select()
     .from(projects)
-    .where(eq(projects.id, id))
+    .where(eq(projects.id, parsedId.data))
     .limit(1);
   if (!project) return null;
 
@@ -60,7 +66,7 @@ export async function getAdminProject(id: string) {
         technologies,
         eq(projectTechnologies.technologyId, technologies.id),
       )
-      .where(eq(projectTechnologies.projectId, id))
+      .where(eq(projectTechnologies.projectId, parsedId.data))
       .orderBy(asc(projectTechnologies.sortOrder)),
     getDatabase()
       .select({
@@ -72,7 +78,7 @@ export async function getAdminProject(id: string) {
         sortOrder: projectMedia.sortOrder,
       })
       .from(projectMedia)
-      .where(eq(projectMedia.projectId, id))
+      .where(eq(projectMedia.projectId, parsedId.data))
       .orderBy(asc(projectMedia.sortOrder)),
   ]);
   return { ...project, technologyRows, mediaRows };
@@ -91,79 +97,95 @@ export async function isProjectSlugAvailable(slug: string, id?: string) {
   return !row;
 }
 
-async function syncProjectRelations(
+function projectRelationStatements(
   projectId: string,
-  technologyNames: string[],
-  mediaRelations: ProjectAdminInput["mediaRelations"],
+  input: ProjectAdminInput,
 ) {
   const db = getDatabase();
-  await db
-    .delete(projectTechnologies)
-    .where(eq(projectTechnologies.projectId, projectId));
+  const normalizedTechnologies = canonicalizeTechnologies(input.technologies);
+  const technologySlugs = normalizedTechnologies.map((item) => item.slug);
+  const technologyOrder = normalizedTechnologies.map((_, index) => index);
 
-  for (const [index, rawName] of technologyNames.entries()) {
-    const name = rawName.trim();
-    const slug = name
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/^-|-$/g, "");
-    const [technology] = await db
-      .insert(technologies)
-      .values({ name, slug })
-      .onConflictDoUpdate({
-        target: technologies.slug,
-        set: { updatedAt: new Date() },
-      })
-      .returning({ id: technologies.id });
-    await db.insert(projectTechnologies).values({
-      projectId,
-      technologyId: technology.id,
-      sortOrder: index,
-    });
-  }
-
-  await db.delete(projectMedia).where(eq(projectMedia.projectId, projectId));
-  if (mediaRelations.length) {
-    await db.insert(projectMedia).values(
-      mediaRelations.map((item, index) => ({
-        projectId,
-        mediaId: item.mediaId,
-        role: item.role,
-        altTextOverride: item.altTextOverride,
-        caption: item.caption,
-        sortOrder: index,
-      })),
-    );
-  }
+  return [
+    db
+      .delete(projectTechnologies)
+      .where(eq(projectTechnologies.projectId, projectId)),
+    normalizedTechnologies.length
+      ? db
+          .insert(technologies)
+          .values(normalizedTechnologies)
+          .onConflictDoUpdate({
+            target: technologies.slug,
+            set: { updatedAt: new Date() },
+          })
+      : db.execute(sql`select 1`),
+    normalizedTechnologies.length
+      ? db.execute(sql`
+          insert into project_technologies (
+            project_id,
+            technology_id,
+            sort_order
+          )
+          select
+            ${projectId}::uuid,
+            ${technologies.id},
+            input.sort_order
+          from unnest(
+            ${technologySlugs}::text[],
+            ${technologyOrder}::integer[]
+          ) as input(slug, sort_order)
+          inner join ${technologies} on ${technologies.slug} = input.slug
+        `)
+      : db.execute(sql`select 1`),
+    db.delete(projectMedia).where(eq(projectMedia.projectId, projectId)),
+    input.mediaRelations.length
+      ? db.insert(projectMedia).values(
+          input.mediaRelations.map((item, index) => ({
+            projectId,
+            mediaId: item.mediaId,
+            role: item.role,
+            altTextOverride: item.altTextOverride,
+            caption: item.caption,
+            sortOrder: index,
+          })),
+        )
+      : db.execute(sql`select 1`),
+  ] as const;
 }
 
 export async function createAdminProject(input: ProjectAdminInput) {
   await assertAdmin();
+  const id = randomUUID();
   const now = new Date();
-  const [project] = await getDatabase()
+  const db = getDatabase();
+  const projectWrite = db
     .insert(projects)
     .values({
+      id,
       ...input.project,
       publishedAt: input.project.status === "published" ? now : null,
     })
     .returning({ id: projects.id, slug: projects.slug });
-  await syncProjectRelations(
-    project.id,
-    input.technologies,
-    input.mediaRelations,
-  );
-  return project;
+
+  const [projectRows] = await db.batch([
+    projectWrite,
+    ...projectRelationStatements(id, input),
+  ]);
+  return projectRows[0];
 }
 
 export async function updateAdminProject(id: string, input: ProjectAdminInput) {
   await assertAdmin();
+  const parsedId = entityIdSchema.safeParse(id);
+  if (!parsedId.success) return null;
   const [current] = await getDatabase()
     .select({ publishedAt: projects.publishedAt })
     .from(projects)
-    .where(eq(projects.id, id))
+    .where(eq(projects.id, parsedId.data))
     .limit(1);
   if (!current) return null;
-  const [project] = await getDatabase()
+  const db = getDatabase();
+  const projectWrite = db
     .update(projects)
     .set({
       ...input.project,
@@ -173,10 +195,13 @@ export async function updateAdminProject(id: string, input: ProjectAdminInput) {
           : null,
       updatedAt: new Date(),
     })
-    .where(eq(projects.id, id))
+    .where(eq(projects.id, parsedId.data))
     .returning({ id: projects.id, slug: projects.slug });
-  await syncProjectRelations(id, input.technologies, input.mediaRelations);
-  return project;
+  const [projectRows] = await db.batch([
+    projectWrite,
+    ...projectRelationStatements(parsedId.data, input),
+  ]);
+  return projectRows[0] ?? null;
 }
 
 export async function deleteAdminProject(id: string) {
@@ -310,6 +335,8 @@ export async function listAdminInquiries(
 
 export async function getAdminInquiry(id: string) {
   await assertAdmin();
+  const parsedId = entityIdSchema.safeParse(id);
+  if (!parsedId.success) return null;
   const [row] = await getDatabase()
     .select({
       id: inquiries.id,
@@ -328,13 +355,13 @@ export async function getAdminInquiry(id: string) {
       updatedAt: inquiries.updatedAt,
     })
     .from(inquiries)
-    .where(eq(inquiries.id, id))
+    .where(eq(inquiries.id, parsedId.data))
     .limit(1);
   if (row && !row.readAt) {
     await getDatabase()
       .update(inquiries)
       .set({ readAt: new Date() })
-      .where(eq(inquiries.id, id));
+      .where(eq(inquiries.id, parsedId.data));
   }
   return row ?? null;
 }
@@ -445,11 +472,64 @@ export async function getAdminMedia(id: string) {
   return row ?? null;
 }
 
-export async function deleteAdminMediaRow(id: string) {
+export async function deleteUnreferencedAdminMedia(id: string) {
   await assertAdmin();
   const [row] = await getDatabase()
     .delete(mediaAssets)
-    .where(eq(mediaAssets.id, id))
-    .returning({ id: mediaAssets.id });
+    .where(
+      and(
+        eq(mediaAssets.id, id),
+        notExists(
+          getDatabase()
+            .select({ id: projectMedia.id })
+            .from(projectMedia)
+            .where(eq(projectMedia.mediaId, id)),
+        ),
+        notExists(
+          getDatabase()
+            .select({ id: projects.id })
+            .from(projects)
+            .where(
+              or(
+                eq(projects.thumbnailMediaId, id),
+                eq(projects.heroMediaId, id),
+              ),
+            ),
+        ),
+        notExists(
+          getDatabase()
+            .select({ id: testimonials.id })
+            .from(testimonials)
+            .where(eq(testimonials.avatarMediaId, id)),
+        ),
+      ),
+    )
+    .returning();
   return row ?? null;
+}
+
+export async function restoreAdminMediaRow(
+  media: typeof mediaAssets.$inferSelect,
+) {
+  await assertAdmin();
+  await getDatabase()
+    .insert(mediaAssets)
+    .values(media)
+    .onConflictDoUpdate({
+      target: mediaAssets.id,
+      set: {
+        provider: media.provider,
+        providerKey: media.providerKey,
+        url: media.url,
+        width: media.width,
+        height: media.height,
+        format: media.format,
+        bytes: media.bytes,
+        altText: media.altText,
+        folder: media.folder,
+        createdByUserId: media.createdByUserId,
+        createdAt: media.createdAt,
+        updatedAt: media.updatedAt,
+      },
+    });
 }

@@ -17,6 +17,7 @@ import {
   getProjectBySlug,
   getPublishedProjects,
 } from "@/server/dal/projects";
+import { resolvePublicSiteSettings } from "@/server/dal/mappers";
 
 const placeholder = {
   src: "/images/media-placeholder.svg",
@@ -99,3 +100,7 @@ export const getCachedPublicSiteSettings = unstable_cache(
   ["public-settings"],
   { revalidate: 3600, tags: ["settings"] },
 );
+
+export async function getResolvedPublicSiteSettings() {
+  return resolvePublicSiteSettings(await getCachedPublicSiteSettings());
+}

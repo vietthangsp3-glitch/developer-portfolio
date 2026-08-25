@@ -5,6 +5,7 @@ import { recordAuditEventBestEffort } from "@/server/audit";
 import { auth } from "@/server/auth";
 import { getLoginIdentifierHash } from "@/server/auth/rate-limit";
 import { consumeRateLimit } from "@/server/rate-limit";
+import { readBoundedJson } from "@/server/security/request-body";
 
 const handlers = toNextJsHandler(auth);
 const signInPath = "/api/auth/sign-in/email";
@@ -17,17 +18,10 @@ function jsonError(message: string, status: number) {
 }
 
 async function enforceLoginRateLimit(request: Request) {
-  const contentLength = Number(request.headers.get("content-length") ?? 0);
-  if (contentLength > 8_192) return false;
+  const body = await readBoundedJson(request.clone(), 8_192);
+  if (!body.ok) return body.reason;
 
-  let input: unknown;
-  try {
-    input = await request.clone().json();
-  } catch {
-    return false;
-  }
-
-  const parsed = loginInputSchema.safeParse(input);
+  const parsed = loginInputSchema.safeParse(body.value);
   const email = parsed.success ? parsed.data.email : "invalid";
   const result = await consumeRateLimit({
     scope: "admin-login",
@@ -36,7 +30,7 @@ async function enforceLoginRateLimit(request: Request) {
     windowMs: 15 * 60 * 1_000,
   });
 
-  return result.allowed;
+  return result.allowed ? "allowed" : "denied";
 }
 
 export async function POST(request: Request) {
@@ -44,7 +38,14 @@ export async function POST(request: Request) {
 
   if (path === signInPath) {
     try {
-      if (!(await enforceLoginRateLimit(request))) {
+      const rateLimit = await enforceLoginRateLimit(request);
+      if (rateLimit === "too_large") {
+        return jsonError("Request body is too large.", 413);
+      }
+      if (rateLimit === "invalid") {
+        return jsonError("Invalid sign-in request.", 400);
+      }
+      if (rateLimit === "denied") {
         return jsonError("Too many attempts. Try again later.", 429);
       }
     } catch {

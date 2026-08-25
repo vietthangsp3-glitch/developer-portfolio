@@ -13,7 +13,9 @@ try {
     `Neon target: ${database.hostname}/${database.pathname.slice(1)}`,
   );
   console.info("Cloudinary: configured");
-  console.info("Resend: configured");
+  console.info(
+    `Inquiry email: ${environment.RESEND_API_KEY ? "configured" : "disabled"}`,
+  );
 } catch (error) {
   console.error("Production environment preflight failed.");
   if (error instanceof Error) console.error(error.message);

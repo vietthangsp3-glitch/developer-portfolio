@@ -6,6 +6,7 @@ import { serviceInputSchema } from "@/features/services/schemas/service";
 import { siteSettingsInputSchema } from "@/features/site-settings/schemas/site-settings";
 import { testimonialInputSchema } from "@/features/testimonials/schemas/testimonial";
 import {
+  entityIdSchema,
   optionalSafeHttpUrlSchema,
   plainTextSchema,
   slugSchema,
@@ -100,7 +101,7 @@ export const inquiryStatusFormSchema = z.object({
   status: inquiryStatusSchema,
 });
 
-export const entityIdSchema = z.string().uuid();
+export { entityIdSchema };
 
 export function slugify(value: string) {
   return value

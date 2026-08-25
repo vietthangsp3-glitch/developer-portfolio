@@ -241,7 +241,7 @@ Goal: ship a verified production release.
 - Cross-browser and real-device QA across mobile, tablet, laptop, desktop, and large desktop.
 - Validate error, empty, loading, offline/provider-failure, long-content, and reduced-motion states.
 - Run full unit/integration/e2e suite, lint, strict types, and production build.
-- Validate Vercel preview/production environment separation, Neon branches/migrations, Cloudinary restrictions, Resend domain, auth origin/cookies, backups, and rollback procedure.
+- Validate Vercel preview/production environment separation, Neon branches/migrations, Cloudinary restrictions, optional all-or-none Resend configuration, auth origin/cookies, backups, and rollback procedure.
 - Perform final content, link, privacy, SEO, accessibility, and performance review.
 
 Acceptance: critical user/admin flows pass in production-like conditions; deployment and rollback are documented; no secrets or draft/private material are exposed.
@@ -251,8 +251,8 @@ target-confirmed production content import and admin bootstrap, the launch and
 recovery runbook, seven-width responsive coverage, provider asset-render
 verification, error/metadata endpoint checks, and security-header assertions. A
 real deployment remains gated on an explicitly identified Vercel project,
-dedicated production Neon branch, canonical HTTPS origin, and verified Resend
-sender.
+dedicated production Neon branch, and canonical HTTPS origin. A verified Resend
+sender is recommended but optional.
 
 Final local production evidence (2026-08-25): 36 unit/component tests and 18
 Chromium E2E tests pass, including authenticated CMS/cache flows and a real
@@ -264,6 +264,25 @@ fail-closed `noindex` policy is active. Firefox/WebKit binaries and a real
 indexable production origin were unavailable, so those checks remain launch
 gates rather than inferred passes. CSP remains report-only pending real
 preview/production observation.
+
+### Focused production hardening follow-up
+
+Status: implemented 2026-08-25 without adding product features or deploying.
+
+- Project rows and their technology/media relations commit through one Neon
+  HTTP batch transaction with canonical technology slugs.
+- Authenticated E2E is isolated behind an explicit development confirmation,
+  exact Neon-host match, and required admin credentials; public E2E remains the
+  safe default.
+- Resend is optional in production but retains all-or-none validation. Public
+  settings drive site identity metadata, shell contact/availability, and the
+  Contact page through one cached fallback-aware resolver.
+- Malformed admin UUIDs stop before DAL queries; bounded request readers no
+  longer trust `Content-Length`; expired rate-limit rows are removed in small,
+  time-gated batches.
+- Media deletion atomically removes only an unreferenced DB row before provider
+  deletion and restores metadata if provider deletion fails. CSP remains
+  report-only until real deployment reports are clean.
 
 ## Post-launch gate — optional 3D evaluation
 

@@ -9,14 +9,12 @@ import { recordAuditEvent } from "@/server/audit";
 import { assertAdmin } from "@/server/auth/session";
 import {
   createAdminMedia,
-  deleteAdminMediaRow,
-  getAdminMedia,
-  getMediaReferenceCounts,
+  deleteUnreferencedAdminMedia,
+  restoreAdminMediaRow,
   updateAdminMediaAlt,
 } from "@/server/dal/cms";
 import {
   destroyCloudinaryAsset,
-  getMediaReferenceTotal,
   verifyCloudinaryUploadResponse,
 } from "@/server/media/cloudinary";
 
@@ -88,20 +86,17 @@ export async function deleteMediaAction(formData: FormData) {
   const session = await assertAdmin();
   const id = z.string().uuid().parse(formData.get("id"));
   if (formData.get("confirm") !== "delete") return;
-  const [media, references] = await Promise.all([
-    getAdminMedia(id),
-    getMediaReferenceCounts(id),
-  ]);
-  if (!media || !references) return;
-  const count = getMediaReferenceTotal(references);
-  if (count > 0) return;
-  if (media.provider === "cloudinary")
-    await destroyCloudinaryAsset(media.providerKey);
-  const deleted = await deleteAdminMediaRow(id);
-  if (!deleted)
-    throw new Error(
-      "Provider asset was removed, but the database record could not be removed. Reconcile this media entry before retrying.",
-    );
+  const media = await deleteUnreferencedAdminMedia(id);
+  if (!media) return;
+
+  try {
+    if (media.provider === "cloudinary")
+      await destroyCloudinaryAsset(media.providerKey);
+  } catch (error) {
+    await restoreAdminMediaRow(media);
+    throw error;
+  }
+
   await recordAuditEvent({
     actorUserId: session.user.id,
     action: "media.deleted",

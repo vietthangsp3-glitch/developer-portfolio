@@ -14,6 +14,36 @@ const rateLimitInputSchema = z.object({
   now: z.date().optional(),
 });
 
+const CLEANUP_INTERVAL_MS = 5 * 60 * 1_000;
+const CLEANUP_BATCH_SIZE = 250;
+let nextCleanupAt = 0;
+
+export function shouldAttemptRateLimitCleanup(now: Date, scheduledAt: number) {
+  return now.getTime() >= scheduledAt;
+}
+
+async function cleanupExpiredRateLimits(now: Date) {
+  if (!shouldAttemptRateLimitCleanup(now, nextCleanupAt)) return;
+  nextCleanupAt = now.getTime() + CLEANUP_INTERVAL_MS;
+
+  try {
+    await getDatabase().execute(sql`
+      delete from rate_limits
+      where ctid in (
+        select ctid
+        from rate_limits
+        where expires_at < ${now}
+        order by expires_at
+        limit ${CLEANUP_BATCH_SIZE}
+      )
+    `);
+  } catch (error) {
+    console.error("Rate-limit cleanup failed", {
+      errorType: error instanceof Error ? error.name : "UnknownError",
+    });
+  }
+}
+
 export type RateLimitResult = {
   allowed: boolean;
   count: number;
@@ -45,6 +75,7 @@ export async function consumeRateLimit(
   const { windowStart, retryAt } = getRateLimitWindow(now, value.windowMs);
 
   return runDatabaseOperation("consumeRateLimit", async () => {
+    await cleanupExpiredRateLimits(now);
     const result = await getDatabase().execute<{ request_count: number }>(sql`
       insert into rate_limits (
         scope,

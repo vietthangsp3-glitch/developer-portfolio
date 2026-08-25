@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+export const entityIdSchema = z.string().uuid();
+
 const localHosts = new Set(["localhost", "127.0.0.1", "[::1]"]);
 
 export const slugSchema = z

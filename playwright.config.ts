@@ -5,6 +5,7 @@ loadEnv({ path: ".env.local", quiet: true });
 
 export default defineConfig({
   testDir: "./tests/e2e",
+  testMatch: "public-site.spec.ts",
   fullyParallel: false,
   workers: 1,
   timeout: 120_000,

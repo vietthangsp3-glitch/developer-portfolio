@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 
 import { PageIntro } from "@/components/layout/page-intro";
 import { Container } from "@/components/ui/container";
-import { siteConfig } from "@/config/site";
 import { ContactForm } from "@/features/inquiries/components/contact-form";
+import { getResolvedPublicSiteSettings } from "@/server/dal/public";
 
 export const metadata: Metadata = {
   title: "Contact",
@@ -12,7 +12,8 @@ export const metadata: Metadata = {
   alternates: { canonical: "/contact" },
 };
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const settings = await getResolvedPublicSiteSettings();
   return (
     <main id="main-content" tabIndex={-1}>
       <PageIntro
@@ -29,13 +30,13 @@ export default function ContactPage() {
               </p>
               <a
                 className="mt-4 inline-block break-all underline underline-offset-4"
-                href={`mailto:${siteConfig.email}`}
+                href={`mailto:${settings.contactEmail}`}
               >
-                {siteConfig.email}
+                {settings.contactEmail}
               </a>
               <p className="text-muted-foreground mt-5 max-w-[24ch] text-sm">
-                {siteConfig.availability}. Replies are typically considered
-                within two working days.
+                {settings.availability}. Replies are typically considered within
+                two working days.
               </p>
             </aside>
             <ContactForm />

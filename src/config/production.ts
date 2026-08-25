@@ -14,9 +14,6 @@ export const productionEnvironmentSchema = serverEnvSchema
     CLOUDINARY_CLOUD_NAME: z.string().trim().min(1),
     CLOUDINARY_API_KEY: z.string().trim().min(1),
     CLOUDINARY_API_SECRET: z.string().trim().min(1),
-    RESEND_API_KEY: z.string().trim().min(1),
-    INQUIRY_NOTIFICATION_EMAIL: z.string().trim().toLowerCase().email(),
-    INQUIRY_FROM_EMAIL: z.string().trim().toLowerCase().email(),
     DATABASE_URL_UNPOOLED: z.string().trim().min(1),
   })
   .superRefine((value, context) => {

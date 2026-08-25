@@ -5,6 +5,7 @@ import { AdminPageHeader } from "@/features/admin/components/admin-page-header";
 import { DeleteControl } from "@/features/admin/components/delete-control";
 import { ProjectForm } from "@/features/admin/components/project-form";
 import { caseStudyContentSchema } from "@/features/projects/schemas/project";
+import { entityIdSchema } from "@/lib/validation";
 import { requireAdmin } from "@/server/auth/session";
 import {
   getAdminProject,
@@ -18,7 +19,9 @@ export default async function EditProjectPage({
   params: Promise<{ id: string }>;
 }) {
   await requireAdmin();
-  const { id } = await params;
+  const parsedId = entityIdSchema.safeParse((await params).id);
+  if (!parsedId.success) notFound();
+  const id = parsedId.data;
   const [project, media, technologies] = await Promise.all([
     getAdminProject(id),
     listAdminMedia(),

@@ -8,14 +8,14 @@ guessing.
 
 ## Environment separation
 
-| Concern               | Development                 | Preview                     | Production                          |
-| --------------------- | --------------------------- | --------------------------- | ----------------------------------- |
-| Neon                  | Developer branch            | Dedicated preview branch    | Dedicated production branch         |
-| Canonical/auth origin | `http://localhost:3000`     | Stable HTTPS preview origin | Final HTTPS public origin           |
-| Cloudinary            | Test-capable account/folder | Scoped preview credentials  | Production-approved credentials     |
-| Resend                | Disabled or test sender     | Verified staging sender     | Verified domain and owner recipient |
-| Indexing              | Disallowed                  | Disallowed                  | Valid production configuration only |
-| Admin                 | Development account         | Preview-only account        | Separate production account         |
+| Concern               | Development                 | Preview                     | Production                            |
+| --------------------- | --------------------------- | --------------------------- | ------------------------------------- |
+| Neon                  | Developer branch            | Dedicated preview branch    | Dedicated production branch           |
+| Canonical/auth origin | `http://localhost:3000`     | Stable HTTPS preview origin | Final HTTPS public origin             |
+| Cloudinary            | Test-capable account/folder | Scoped preview credentials  | Production-approved credentials       |
+| Resend                | Disabled or test sender     | Optional verified sender    | Optional; verified sender recommended |
+| Indexing              | Disallowed                  | Disallowed                  | Valid production configuration only   |
+| Admin                 | Development account         | Preview-only account        | Separate production account           |
 
 Never copy a database URL, auth secret, HMAC secret, or administrator password
 between environments. Scope Vercel values explicitly to Preview or Production.
@@ -34,8 +34,10 @@ Set these in the Vercel Production environment only:
 - `RATE_LIMIT_HMAC_SECRET`: a different production-only value.
 - `CLOUDINARY_CLOUD_NAME`, `CLOUDINARY_API_KEY`, and
   `CLOUDINARY_API_SECRET`: one production-approved credential set.
-- `RESEND_API_KEY`, `INQUIRY_NOTIFICATION_EMAIL`, and `INQUIRY_FROM_EMAIL`: a
-  verified sender configuration and the real private owner recipient.
+- Optional: `RESEND_API_KEY`, `INQUIRY_NOTIFICATION_EMAIL`, and
+  `INQUIRY_FROM_EMAIL`. Configure all three together with a verified sender and
+  private owner recipient, or leave all three unset. Database-backed inquiry
+  capture remains active without email.
 
 `VERCEL_ENV` is supplied by Vercel and must not be copied into committed env
 files. No secret belongs in a `NEXT_PUBLIC_` variable.
@@ -49,7 +51,8 @@ files. No secret belongs in a `NEXT_PUBLIC_` variable.
 3. Configure Preview values and verify the preview remains `noindex`. Resolve
    CSP reports there; keep CSP report-only until a real production observation
    window is clean.
-4. Configure all Production values. Pull them into an ignored temporary local
+4. Configure all required Production values and either all three Resend values
+   or none. Pull them into an ignored temporary local
    environment only when an operator must run migrations. Never paste values
    into documentation or logs.
 5. Run `VERCEL_ENV=production npm run production:check`. Confirm the displayed
@@ -91,14 +94,17 @@ On the real URL verify the homepage, Work and every published project, About,
 Services, Contact, admin login/dashboard/CMS/media/inquiries, logout,
 `robots.txt`, `sitemap.xml`, canonical metadata, Open Graph images, browser
 console, and failed network requests. Submit one controlled inquiry and confirm
-the database row exists before Resend delivery is marked sent. Upload one small
+the database row exists. If Resend is enabled, confirm delivery is marked sent;
+otherwise confirm `not_requested`. Upload one small
 allowlisted image, confirm it renders through `next/image`, then delete the
 unreferenced QA asset and confirm Cloudinary and PostgreSQL are clean.
 
 Run Lighthouse on the real indexable origin. Launch targets are Performance
 90+, Accessibility 95+, Best Practices 95+, and SEO 95+. Confirm production
 cookies are Secure, HTTP-only, host-only, SameSite Lax, and expire within eight
-hours. Review CSP reports before changing report-only to enforced.
+hours. Collect CSP reports after deployment, fix legitimate violations, and
+review a clean observation window before changing report-only to enforced. Do
+not relax the policy with broad wildcards.
 
 ## Recovery
 

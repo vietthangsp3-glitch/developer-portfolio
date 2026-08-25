@@ -17,7 +17,10 @@ export function SiteFooter({
         <div className="border-border grid grid-cols-4 gap-x-4 gap-y-10 border-t pt-5 text-sm md:grid-cols-8 md:gap-x-6 lg:grid-cols-12">
           <div className="col-span-4 md:col-span-4 lg:col-span-5">
             <p className="text-subheading max-w-[18ch] leading-tight font-medium">
-              Thoughtful interfaces. Reliable engineering.
+              {settings?.siteTitle ?? siteConfig.title}
+            </p>
+            <p className="text-muted-foreground mt-3 max-w-[38ch] text-sm">
+              {settings?.siteDescription ?? siteConfig.description}
             </p>
             <a
               className="mt-5 inline-block underline underline-offset-4"

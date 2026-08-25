@@ -7,6 +7,7 @@ import {
 import { ActionForm } from "@/features/admin/components/action-form";
 import { AdminPageHeader } from "@/features/admin/components/admin-page-header";
 import { Field, Select } from "@/features/admin/components/form-controls";
+import { entityIdSchema } from "@/lib/validation";
 import { requireAdmin } from "@/server/auth/session";
 import { getAdminInquiry } from "@/server/dal/cms";
 
@@ -16,7 +17,9 @@ export default async function InquiryPage({
   params: Promise<{ id: string }>;
 }) {
   await requireAdmin();
-  const inquiry = await getAdminInquiry((await params).id);
+  const parsedId = entityIdSchema.safeParse((await params).id);
+  if (!parsedId.success) notFound();
+  const inquiry = await getAdminInquiry(parsedId.data);
   if (!inquiry) notFound();
   return (
     <div>

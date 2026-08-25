@@ -1,5 +1,6 @@
 import { caseStudyContentSchema } from "@/features/projects/schemas/project";
 import { socialLinkSchema } from "@/features/site-settings/schemas/site-settings";
+import { siteConfig } from "@/config/site";
 import {
   optionalSafeHttpUrlSchema,
   safeMediaUrlSchema,
@@ -118,4 +119,21 @@ export function toPublicSiteSettingsDto(input: {
     ...input,
     socialLinks: socialLinkSchema.array().max(12).parse(input.socialLinks),
   };
+}
+
+export function resolvePublicSiteSettings(
+  settings: PublicSiteSettingsDto | null,
+): PublicSiteSettingsDto {
+  return (
+    settings ?? {
+      siteName: siteConfig.name,
+      siteTitle: siteConfig.title,
+      siteDescription: siteConfig.description,
+      availability: siteConfig.availability,
+      contactEmail: siteConfig.email,
+      socialLinks: [],
+      seoTitle: siteConfig.title,
+      seoDescription: siteConfig.description,
+    }
+  );
 }

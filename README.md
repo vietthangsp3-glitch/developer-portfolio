@@ -42,7 +42,9 @@ npm run dev          # local development
 npm run lint         # ESLint and Next.js rules
 npm run typecheck    # strict TypeScript validation
 npm test             # Vitest unit and component tests
-npm run test:e2e     # Playwright responsive and keyboard smoke tests
+npm run test:e2e     # safe alias for public/read-only Playwright coverage
+npm run test:e2e:public # public/read-only browser coverage
+npm run test:e2e:admin  # guarded authenticated/mutating development coverage
 npm run format       # format supported files
 npm run format:check # verify formatting
 npm run build        # production webpack build
@@ -91,9 +93,13 @@ Permanent contributor instructions are in [AGENTS.md](AGENTS.md).
 | `CLOUDINARY_CLOUD_NAME`      | Cloudinary account name; required with the other media values. |
 | `CLOUDINARY_API_KEY`         | Cloudinary upload API key.                                     |
 | `CLOUDINARY_API_SECRET`      | Server-only signing and deletion secret.                       |
-| `RESEND_API_KEY`             | Optional locally; server-only Resend credential.               |
+| `RESEND_API_KEY`             | Optional server-only Resend credential.                        |
 | `INQUIRY_NOTIFICATION_EMAIL` | Private recipient for stored inquiry notifications.            |
 | `INQUIRY_FROM_EMAIL`         | Sender on a verified Resend domain.                            |
+| `E2E_TARGET_CONFIRM`         | Must equal `development` for mutating browser QA.              |
+| `E2E_EXPECTED_DATABASE_HOST` | Exact allowed Neon hostname for authenticated E2E.             |
+| `E2E_ADMIN_EMAIL`            | Development-only admin identity for authenticated E2E.         |
+| `E2E_ADMIN_PASSWORD`         | Ignored development-only credential for authenticated E2E.     |
 
 Never commit `.env.local` or real credentials. Auth and admin routes fail closed
 when their server environment is incomplete; no auth value uses a
@@ -101,7 +107,15 @@ when their server environment is incomplete; no auth value uses a
 
 All three inquiry email variables must be set together. Without them, valid
 local inquiries still store successfully with `not_requested` delivery state.
-Production launch requires a verified Resend domain and all three variables.
+Production may run without them; inquiries remain stored with `not_requested`
+delivery state. A verified sender is recommended before public launch, but it is
+not a deployment prerequisite.
+
+Authenticated E2E is intentionally separate from the safe public suite. Before
+`npm run test:e2e:admin`, set `E2E_TARGET_CONFIRM=development`, the exact pooled
+Neon hostname in `E2E_EXPECTED_DATABASE_HOST`, and development-only admin
+credentials. The guard refuses Vercel production and host mismatches before the
+test server or mutation suite starts.
 
 ## Neon and migrations
 
@@ -156,6 +170,9 @@ email) per 15-minute PostgreSQL window.
 - `src/server/db` owns the Neon HTTP client and Drizzle schema.
 - `src/server/dal` owns parameterized public/admin reads and CMS mutations;
   public callers receive explicit DTOs that exclude draft/private fields.
+- Project, technology, and project-media writes are submitted as one Neon HTTP
+  batch transaction; technology casing/punctuation variants share one canonical
+  slug identity.
 - Zod validates environment, CMS inputs, URLs, structured case-study JSON, and
   JSON read back across database boundaries.
 - Public projects, services, legitimate testimonials, and typed site settings
@@ -174,11 +191,11 @@ header. No raw IP or user-agent value is persisted. On Vercel,
 `x-vercel-forwarded-for` is trusted because the platform supplies it; local
 development intentionally shares one synthetic identity.
 
-Database storage is authoritative and happens before email. Resend receives a
-plain-text notification only, with the visitor's validated email as `replyTo`.
-Provider failures mark delivery `failed` while returning a successful receipt
-to the visitor. Admins may explicitly retry failed or previously unrequested
-notifications.
+Database storage is authoritative and happens before optional email. When all
+three Resend values are configured, Resend receives a plain-text notification
+with the visitor's validated email as `replyTo`. Provider failures mark delivery
+`failed` while returning a successful receipt. Without Resend, delivery remains
+`not_requested`; inquiry storage and admin management are unchanged.
 
 Search indexing is fail-closed. It is enabled only when `NODE_ENV=production`,
 `VERCEL_ENV=production`, and `NEXT_PUBLIC_SITE_URL` is a non-local HTTPS origin.

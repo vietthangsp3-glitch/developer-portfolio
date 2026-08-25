@@ -3,6 +3,7 @@ import { Reveal } from "@/components/animation/reveal";
 import { ScrambleText } from "@/components/animation/scramble-text";
 import { SelectedWorkMotion } from "@/components/animation/selected-work-motion";
 import { Container } from "@/components/ui/container";
+import { SectionDivider } from "@/components/ui/section";
 import { SectionLabel } from "@/components/ui/section-label";
 import { TextLink } from "@/components/ui/text-link";
 import { siteConfig } from "@/config/site";
@@ -134,9 +135,10 @@ export function HomePage({
       <section
         id="about"
         aria-labelledby="about-title"
-        className="py-section-wide border-border border-b"
+        className="py-section-wide"
       >
         <Container>
+          <SectionDivider />
           <div className="grid grid-cols-4 gap-x-4 gap-y-10 md:grid-cols-8 md:gap-x-6 lg:grid-cols-12">
             <SectionLabel className="col-span-4 md:col-span-2 lg:col-span-3">
               About / 01
@@ -164,10 +166,11 @@ export function HomePage({
       <SelectedWorkMotion>
         <section
           aria-labelledby="selected-projects-title"
-          className="py-section-wide border-border border-b"
+          className="py-section-wide"
           id="selected-projects"
         >
           <Container>
+            <SectionDivider />
             <div className="mb-12 grid grid-cols-4 gap-x-4 md:mb-20 md:grid-cols-8 md:gap-x-6 lg:grid-cols-12">
               <SectionLabel className="col-span-2 lg:col-span-3">
                 Selected projects / 02
@@ -202,6 +205,7 @@ export function HomePage({
         className="py-section-tight"
       >
         <Container>
+          <SectionDivider />
           <div className="grid grid-cols-4 gap-x-4 gap-y-12 md:grid-cols-8 md:gap-x-6 lg:grid-cols-12">
             <SectionLabel className="col-span-4 md:col-span-2 lg:col-span-3">
               Services / 03
@@ -251,6 +255,7 @@ export function HomePage({
 
       <section aria-labelledby="technology-title" className="py-section-tight">
         <Container>
+          <SectionDivider />
           <div className="grid grid-cols-4 gap-x-4 gap-y-12 md:grid-cols-8 md:gap-x-6 lg:grid-cols-12">
             <SectionLabel className="col-span-4 md:col-span-2 lg:col-span-3">
               Technology / 04
@@ -284,11 +289,9 @@ export function HomePage({
         </Container>
       </section>
 
-      <section
-        aria-labelledby="testimonials-title"
-        className="py-section border-border border-y"
-      >
+      <section aria-labelledby="testimonials-title" className="py-section">
         <Container>
+          <SectionDivider />
           <div className="grid grid-cols-4 gap-x-4 gap-y-12 md:grid-cols-8 md:gap-x-6 lg:grid-cols-12">
             <SectionLabel className="col-span-4 md:col-span-2 lg:col-span-3">
               Testimonials / 05
@@ -334,9 +337,10 @@ export function HomePage({
         <section
           id="contact"
           aria-labelledby="contact-title"
-          className="border-accent pt-section-wide pb-section border-t-2"
+          className="pt-section-wide pb-section"
         >
           <Container>
+            <SectionDivider />
             <div className="grid grid-cols-4 gap-x-4 gap-y-10 md:grid-cols-8 md:gap-x-6 lg:grid-cols-12">
               <SectionLabel className="col-span-4 md:col-span-2 lg:col-span-3">
                 Contact / 06

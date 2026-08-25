@@ -19,7 +19,7 @@ export function SiteHeader({
     .slice(0, 2)
     .toUpperCase();
   return (
-    <header className="h-header relative z-50">
+    <header className="bg-background/70 h-header fixed inset-x-0 top-0 z-50 backdrop-blur-md">
       <Container className="border-border flex h-full items-center justify-between border-b">
         <Link
           href="/"

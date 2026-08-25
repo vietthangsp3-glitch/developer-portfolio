@@ -135,7 +135,7 @@ export function HomePage({
       <section
         id="about"
         aria-labelledby="about-title"
-        className="py-section-wide"
+        className="home-anchor py-home-section"
       >
         <Container>
           <SectionDivider />
@@ -166,7 +166,7 @@ export function HomePage({
       <SelectedWorkMotion>
         <section
           aria-labelledby="selected-projects-title"
-          className="py-section-wide"
+          className="home-anchor py-home-section"
           id="selected-projects"
         >
           <Container>
@@ -202,7 +202,7 @@ export function HomePage({
       <section
         id="services"
         aria-labelledby="services-title"
-        className="py-section-tight"
+        className="home-anchor py-home-section"
       >
         <Container>
           <SectionDivider />
@@ -253,7 +253,7 @@ export function HomePage({
         </Container>
       </section>
 
-      <section aria-labelledby="technology-title" className="py-section-tight">
+      <section aria-labelledby="technology-title" className="py-home-section">
         <Container>
           <SectionDivider />
           <div className="grid grid-cols-4 gap-x-4 gap-y-12 md:grid-cols-8 md:gap-x-6 lg:grid-cols-12">
@@ -289,7 +289,7 @@ export function HomePage({
         </Container>
       </section>
 
-      <section aria-labelledby="testimonials-title" className="py-section">
+      <section aria-labelledby="testimonials-title" className="py-home-section">
         <Container>
           <SectionDivider />
           <div className="grid grid-cols-4 gap-x-4 gap-y-12 md:grid-cols-8 md:gap-x-6 lg:grid-cols-12">
@@ -337,7 +337,7 @@ export function HomePage({
         <section
           id="contact"
           aria-labelledby="contact-title"
-          className="pt-section-wide pb-section"
+          className="home-anchor py-home-section"
         >
           <Container>
             <SectionDivider />

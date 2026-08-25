@@ -43,6 +43,7 @@ export default async function SiteLayout({ children }: LayoutProps<"/">) {
         </a>
         <SmoothScroll />
         <SiteHeader settings={settings} />
+        <div aria-hidden="true" className="h-header shrink-0" />
         {children}
         <SiteFooter settings={settings} />
       </div>

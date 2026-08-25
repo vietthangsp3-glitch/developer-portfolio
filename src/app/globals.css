@@ -32,6 +32,7 @@
   --space-section-compact: clamp(3.5rem, 6vw, 6rem);
   --space-section-tight: clamp(3.5rem, 5vw, 5rem);
   --space-section-wide: clamp(6.5rem, 13vw, 13rem);
+  --space-home-section: clamp(2.5rem, 4.5vw, 4.5rem);
   --header-height: clamp(4.5rem, 7vw, 5.5rem);
   --content-width: 120rem;
   --reading-width: 45rem;
@@ -95,6 +96,7 @@
   --spacing-section-compact: var(--space-section-compact);
   --spacing-section-tight: var(--space-section-tight);
   --spacing-section-wide: var(--space-section-wide);
+  --spacing-home-section: var(--space-home-section);
   --spacing-header: var(--header-height);
   --container-content: var(--content-width);
   --container-reading: var(--reading-width);
@@ -177,6 +179,10 @@ body {
 .site-foreground {
   position: relative;
   z-index: 1;
+}
+
+.home-anchor {
+  scroll-margin-top: calc(var(--header-height) + 1rem);
 }
 
 .admin-root {

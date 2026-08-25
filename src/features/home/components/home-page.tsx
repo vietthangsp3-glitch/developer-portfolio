@@ -4,7 +4,7 @@ import { ScrambleText } from "@/components/animation/scramble-text";
 import { SelectedWorkMotion } from "@/components/animation/selected-work-motion";
 import { Container } from "@/components/ui/container";
 import { SectionDivider } from "@/components/ui/section";
-import { SectionLabel } from "@/components/ui/section-label";
+import { SectionHeader } from "@/components/ui/section-header";
 import { TextLink } from "@/components/ui/text-link";
 import { siteConfig } from "@/config/site";
 import { technologyGroups } from "@/features/content/data/site-content";
@@ -139,18 +139,16 @@ export function HomePage({
       >
         <Container>
           <SectionDivider />
-          <div className="grid grid-cols-4 gap-x-4 gap-y-10 md:grid-cols-8 md:gap-x-6 lg:grid-cols-12">
-            <SectionLabel className="col-span-4 md:col-span-2 lg:col-span-3">
-              About / 01
-            </SectionLabel>
-            <div className="col-span-4 md:col-span-6 lg:col-span-7 lg:col-start-5">
-              <h2
-                id="about-title"
-                className="text-heading max-w-[15ch] font-medium"
-              >
-                One partner from first question to final detail.
-              </h2>
-              <p className="text-lead text-muted-foreground mt-8 max-w-[50ch]">
+          <SectionHeader
+            index="01"
+            label="About"
+            title="One partner from first question to final detail."
+            titleClassName="max-w-[15ch]"
+            titleId="about-title"
+          />
+          <div className="grid grid-cols-4 gap-x-4 md:grid-cols-8 md:gap-x-6 lg:grid-cols-12">
+            <div className="col-span-4 md:col-span-6 md:col-start-3 lg:col-span-7 lg:col-start-5">
+              <p className="text-lead text-muted-foreground max-w-[50ch]">
                 I work across design and engineering because the strongest
                 digital work depends on both. The process stays direct,
                 collaborative, and grounded in what the project actually needs.
@@ -171,17 +169,13 @@ export function HomePage({
         >
           <Container>
             <SectionDivider />
-            <div className="mb-12 grid grid-cols-4 gap-x-4 md:mb-20 md:grid-cols-8 md:gap-x-6 lg:grid-cols-12">
-              <SectionLabel className="col-span-2 lg:col-span-3">
-                Selected projects / 02
-              </SectionLabel>
-              <h2
-                id="selected-projects-title"
-                className="text-heading col-span-4 col-start-1 mt-8 font-medium md:col-span-6 md:col-start-3 md:mt-0 lg:col-span-7 lg:col-start-5"
-              >
-                A selection of focused digital systems.
-              </h2>
-            </div>
+            <SectionHeader
+              index="02"
+              label="Selected projects"
+              title="A selection of focused digital systems."
+              titleClassName="max-w-[14ch]"
+              titleId="selected-projects-title"
+            />
             <ProjectIndex
               items={selectedProjects}
               headingLevel="h3"
@@ -206,18 +200,14 @@ export function HomePage({
       >
         <Container>
           <SectionDivider />
-          <div className="grid grid-cols-4 gap-x-4 gap-y-12 md:grid-cols-8 md:gap-x-6 lg:grid-cols-12">
-            <SectionLabel className="col-span-4 md:col-span-2 lg:col-span-3">
-              Services / 03
-            </SectionLabel>
-            <h2
-              id="services-title"
-              className="text-heading col-span-4 max-w-[14ch] font-medium md:col-span-6 lg:col-span-7"
-            >
-              Direction, design, and engineering in one close loop.
-            </h2>
-          </div>
-          <ol className="mt-16 md:mt-24">
+          <SectionHeader
+            index="03"
+            label="Services"
+            title="Direction, design, and engineering in one close loop."
+            titleClassName="max-w-[14ch]"
+            titleId="services-title"
+          />
+          <ol>
             {services.map((service, index) => (
               <li
                 key={service.slug}
@@ -256,18 +246,16 @@ export function HomePage({
       <section aria-labelledby="technology-title" className="py-home-section">
         <Container>
           <SectionDivider />
-          <div className="grid grid-cols-4 gap-x-4 gap-y-12 md:grid-cols-8 md:gap-x-6 lg:grid-cols-12">
-            <SectionLabel className="col-span-4 md:col-span-2 lg:col-span-3">
-              Technology / 04
-            </SectionLabel>
-            <div className="col-span-4 md:col-span-6 lg:col-span-8">
-              <h2
-                id="technology-title"
-                className="text-heading max-w-[13ch] font-medium"
-              >
-                The right tools, kept in their place.
-              </h2>
-              <div className="mt-12 grid gap-8 md:grid-cols-3">
+          <SectionHeader
+            index="04"
+            label="Technology"
+            title="The right tools, kept in their place."
+            titleClassName="max-w-[13ch]"
+            titleId="technology-title"
+          />
+          <div className="grid grid-cols-4 gap-x-4 md:grid-cols-8 md:gap-x-6 lg:grid-cols-12">
+            <div className="col-span-4 md:col-span-6 md:col-start-3 lg:col-span-8 lg:col-start-5">
+              <div className="grid gap-8 md:grid-cols-3">
                 {technologyGroups.map((group) => (
                   <div
                     key={group.label}
@@ -292,19 +280,17 @@ export function HomePage({
       <section aria-labelledby="testimonials-title" className="py-home-section">
         <Container>
           <SectionDivider />
-          <div className="grid grid-cols-4 gap-x-4 gap-y-12 md:grid-cols-8 md:gap-x-6 lg:grid-cols-12">
-            <SectionLabel className="col-span-4 md:col-span-2 lg:col-span-3">
-              Testimonials / 05
-            </SectionLabel>
-            <div className="col-span-4 md:col-span-6 lg:col-span-9">
-              <h2
-                id="testimonials-title"
-                className="text-heading max-w-[12ch] font-medium"
-              >
-                Good work starts with trust.
-              </h2>
+          <SectionHeader
+            index="05"
+            label="Testimonials"
+            title="Good work starts with trust."
+            titleClassName="max-w-[12ch]"
+            titleId="testimonials-title"
+          />
+          <div className="grid grid-cols-4 gap-x-4 md:grid-cols-8 md:gap-x-6 lg:grid-cols-12">
+            <div className="col-span-4 md:col-span-6 md:col-start-3 lg:col-span-9 lg:col-start-4">
               {testimonials.length ? (
-                <div className="mt-14 grid gap-12 lg:grid-cols-2">
+                <div className="grid gap-12 lg:grid-cols-2">
                   {testimonials.map((item) => (
                     <figure
                       key={`${item.personName}-${item.company}`}
@@ -323,7 +309,7 @@ export function HomePage({
                   ))}
                 </div>
               ) : (
-                <p className="text-muted-foreground mt-8 max-w-[45ch]">
+                <p className="text-muted-foreground max-w-[45ch]">
                   Client references are shared privately while verified public
                   testimonials are being prepared.
                 </p>
@@ -341,18 +327,16 @@ export function HomePage({
         >
           <Container>
             <SectionDivider />
-            <div className="grid grid-cols-4 gap-x-4 gap-y-10 md:grid-cols-8 md:gap-x-6 lg:grid-cols-12">
-              <SectionLabel className="col-span-4 md:col-span-2 lg:col-span-3">
-                Contact / 06
-              </SectionLabel>
-              <div className="col-span-4 md:col-span-6 lg:col-span-8 lg:col-start-5">
-                <h2
-                  id="contact-title"
-                  className="text-page-title max-w-[10ch] font-medium text-balance"
-                >
-                  Have something worth making?
-                </h2>
-                <p className="text-lead text-muted-foreground mt-8 max-w-[45ch]">
+            <SectionHeader
+              index="06"
+              label="Contact"
+              title="Have something worth making?"
+              titleClassName="max-w-[10ch]"
+              titleId="contact-title"
+            />
+            <div className="grid grid-cols-4 gap-x-4 md:grid-cols-8 md:gap-x-6 lg:grid-cols-12">
+              <div className="col-span-4 md:col-span-6 md:col-start-3 lg:col-span-8 lg:col-start-5">
+                <p className="text-lead text-muted-foreground max-w-[45ch]">
                   Tell me what you are building, what needs to change, and where
                   you want the work to go.
                 </p>

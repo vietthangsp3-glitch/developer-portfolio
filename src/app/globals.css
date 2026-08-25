@@ -22,6 +22,7 @@
   --type-hero-name: clamp(5rem, 17vw, 16rem);
   --type-page-title: clamp(3rem, 5vw + 1rem, 7rem);
   --type-heading: clamp(2.25rem, 3vw + 1rem, 5rem);
+  --type-section-heading: clamp(2.125rem, 3.6vw, 4.25rem);
   --type-subheading: clamp(1.5rem, 1.25vw + 1rem, 2.25rem);
   --type-lead: clamp(1.125rem, 0.6vw + 1rem, 1.5rem);
   --type-body: clamp(1rem, 0.25vw + 0.94rem, 1.125rem);
@@ -33,7 +34,7 @@
   --space-section-tight: clamp(3.5rem, 5vw, 5rem);
   --space-section-wide: clamp(6.5rem, 13vw, 13rem);
   --space-home-section: clamp(2.5rem, 4.5vw, 4.5rem);
-  --header-height: clamp(4.5rem, 7vw, 5.5rem);
+  --header-height: clamp(3.5rem, 5vw, 4.25rem);
   --content-width: 120rem;
   --reading-width: 45rem;
 
@@ -80,6 +81,9 @@
   --text-heading: var(--type-heading);
   --text-heading--line-height: 1;
   --text-heading--letter-spacing: -0.038em;
+  --text-section-heading: var(--type-section-heading);
+  --text-section-heading--line-height: 0.98;
+  --text-section-heading--letter-spacing: -0.035em;
   --text-subheading: var(--type-subheading);
   --text-subheading--line-height: 1.15;
   --text-subheading--letter-spacing: -0.025em;

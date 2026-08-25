@@ -86,7 +86,10 @@ export function HomePage({
                   className="text-hero-name mt-[clamp(1rem,2vw,1.75rem)] pl-[clamp(0.5rem,2vw,1.5rem)] font-[620]"
                 >
                   {nameWords.map((word) => (
-                    <span className="block overflow-hidden" key={word}>
+                    <span
+                      className="-mb-[0.14em] block overflow-hidden pb-[0.14em]"
+                      key={word}
+                    >
                       <span className="block" data-hero-line>
                         <ScrambleText text={word} />
                       </span>

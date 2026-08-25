@@ -35,17 +35,14 @@ export function SiteHeader({
           <VisuallyHidden>home</VisuallyHidden>
         </Link>
 
-        <div className="hidden items-center gap-8 md:flex">
-          <p className="text-label text-muted-foreground hidden font-mono tracking-[0.08em] uppercase lg:block">
-            {settings?.availability ?? siteConfig.availability}
-          </p>
+        <div className="hidden md:block">
           <nav aria-label="Primary navigation">
             <ul className="flex items-center gap-1">
               {siteConfig.navigation.map((item) => (
                 <li key={item.href}>
                   <Link
                     href={item.href}
-                    className="decoration-accent inline-flex min-h-11 items-center px-3 text-sm font-medium no-underline decoration-2 underline-offset-4 hover:underline"
+                    className="text-hero-eyebrow! decoration-accent hover:text-foreground! focus-visible:text-foreground! inline-flex min-h-11 items-center px-3 text-sm font-medium no-underline decoration-2 underline-offset-4 transition-colors duration-200 hover:underline"
                   >
                     {item.label}
                   </Link>

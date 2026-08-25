@@ -69,7 +69,7 @@ export function MobileMenu({ items }: MobileMenuProps) {
                         ? "page"
                         : undefined
                     }
-                    className="text-subheading aria-[current=page]:text-accent flex min-h-16 items-center justify-between py-3 font-medium no-underline"
+                    className="text-subheading text-hero-eyebrow! hover:text-foreground! focus-visible:text-foreground! aria-[current=page]:text-accent! flex min-h-16 items-center justify-between py-3 font-medium no-underline transition-colors duration-200"
                     onClick={closeMenu}
                   >
                     <span>{item.label}</span>

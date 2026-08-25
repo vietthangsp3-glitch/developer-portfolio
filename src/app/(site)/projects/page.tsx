@@ -9,26 +9,27 @@ import {
 } from "@/server/dal/public";
 
 export const metadata: Metadata = {
-  title: "Work",
+  title: "Projects",
   description:
     "Selected website, product, commerce, and interactive development case studies.",
-  alternates: { canonical: "/work" },
+  alternates: { canonical: "/projects" },
 };
 
-export default async function WorkPage() {
+export default async function ProjectsPage() {
   const projects = (await getCachedPublishedProjects()).map(
     projectSummaryToView,
   );
+
   return (
     <main id="main-content" tabIndex={-1}>
       <PageIntro
-        label="Work / Index"
-        title="Selected work."
-        description="Representative projects across websites, digital products, publishing systems, and interactive experiences."
+        label="Projects / Index"
+        title="Selected projects."
+        description="Published work across websites, digital products, publishing systems, and interactive experiences."
       />
       <section aria-label="Project index" className="pb-section">
         <Container>
-          <ProjectIndex items={projects} />
+          <ProjectIndex items={projects} variant="technical" />
         </Container>
       </section>
     </main>

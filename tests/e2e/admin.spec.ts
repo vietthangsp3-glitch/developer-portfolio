@@ -115,7 +115,7 @@ test("contact inquiry is stored and moves through the admin workflow", async ({
 
   try {
     await page.setViewportSize({ width: 390, height: 900 });
-    await page.goto("/contact");
+    await page.goto("/#contact");
     await page.getByLabel("Name").fill("Honeypot QA");
     await page.getByLabel("Email").fill(email);
     await page.getByLabel("Project type").selectOption("Web application");
@@ -135,7 +135,7 @@ test("contact inquiry is stored and moves through the admin workflow", async ({
     );
     expect(honeypotRows[0]?.count).toBe(0);
 
-    await page.goto("/contact");
+    await page.goto("/#contact");
     await page.getByLabel("Name").fill("Phase 8 QA");
     await page.getByLabel("Email").fill(email);
     await page.getByLabel("Company").fill("QA Studio");
@@ -230,7 +230,7 @@ test("admin can create, publish, update, archive, and delete a project", async (
   await page.getByRole("button", { name: "Create project" }).click();
   await expect(page).toHaveURL(/\/admin\/projects\/[0-9a-f-]+\?created=1$/);
 
-  await page.goto(`/work/${slug}`);
+  await page.goto(`/projects/${slug}`);
   await expect(
     page.getByRole("heading", {
       name: "This page is not part of the index.",
@@ -243,7 +243,7 @@ test("admin can create, publish, update, archive, and delete a project", async (
   await page.getByLabel("Status").selectOption("published");
   await page.getByRole("button", { name: "Save project" }).click();
   await expect(page.getByText("Project saved.")).toBeVisible();
-  await page.goto(`/work/${slug}`);
+  await page.goto(`/projects/${slug}`);
   await expect(
     page.getByRole("heading", { level: 1, name: "Phase 7 QA Project" }),
   ).toBeVisible();
@@ -259,7 +259,7 @@ test("admin can create, publish, update, archive, and delete a project", async (
     .fill("The public update is visible after targeted cache invalidation.");
   await page.getByRole("button", { name: "Save project" }).click();
   await expect(page.getByText("Project saved.")).toBeVisible();
-  await page.goto(`/work/${slug}`);
+  await page.goto(`/projects/${slug}`);
   await expect(
     page.getByText(
       "The public update is visible after targeted cache invalidation.",
@@ -280,7 +280,7 @@ test("admin can create, publish, update, archive, and delete a project", async (
   await page.getByLabel("I understand this cannot be undone.").check();
   await page.getByRole("button", { name: "Delete permanently" }).click();
   await expect(page).toHaveURL(/\/admin\/projects\?deleted=1$/);
-  await page.goto(`/work/${slug}`);
+  await page.goto(`/projects/${slug}`);
   await expect(
     page.getByRole("heading", {
       name: "This page is not part of the index.",

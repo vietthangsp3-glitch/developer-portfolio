@@ -9,6 +9,7 @@
   --foreground: #f1efe8;
   --muted: #292d28;
   --muted-foreground: #a7aca3;
+  --hero-eyebrow: #83949b;
   --border: #363b35;
   --accent: #d07151;
   --accent-foreground: #15120f;
@@ -17,7 +18,7 @@
   --success: #7fc99d;
 
   --type-display: clamp(3.25rem, 8vw + 1rem, 9rem);
-  --type-hero-name: clamp(4.75rem, 16vw, 15rem);
+  --type-hero-name: clamp(5rem, 17vw, 16rem);
   --type-page-title: clamp(3rem, 5vw + 1rem, 7rem);
   --type-heading: clamp(2.25rem, 3vw + 1rem, 5rem);
   --type-subheading: clamp(1.5rem, 1.25vw + 1rem, 2.25rem);
@@ -54,6 +55,7 @@
   --color-foreground: var(--foreground);
   --color-muted: var(--muted);
   --color-muted-foreground: var(--muted-foreground);
+  --color-hero-eyebrow: var(--hero-eyebrow);
   --color-border: var(--border);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
@@ -68,8 +70,8 @@
   --text-display--line-height: 0.9;
   --text-display--letter-spacing: -0.052em;
   --text-hero-name: var(--type-hero-name);
-  --text-hero-name--line-height: 0.78;
-  --text-hero-name--letter-spacing: -0.07em;
+  --text-hero-name--line-height: 0.86;
+  --text-hero-name--letter-spacing: 0.0075em;
   --text-page-title: var(--type-page-title);
   --text-page-title--line-height: 0.94;
   --text-page-title--letter-spacing: -0.045em;

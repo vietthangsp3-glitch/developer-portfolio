@@ -12,9 +12,9 @@ export const siteConfig = {
   location: "Working with clients worldwide",
   email: "hello@thangnguyen.dev",
   navigation: [
-    { label: "Work", href: "/work" },
-    { label: "About", href: "/about" },
-    { label: "Services", href: "/services" },
-    { label: "Contact", href: "/contact" },
+    { label: "ABOUT", href: "/#about" },
+    { label: "PROJECTS", href: "/projects" },
+    { label: "SERVICES", href: "/#services" },
+    { label: "CONTACT", href: "/#contact" },
   ],
 } as const;

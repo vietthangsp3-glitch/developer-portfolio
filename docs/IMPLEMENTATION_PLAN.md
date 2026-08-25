@@ -83,7 +83,7 @@ not open Phase 5 scope.
 Selected Work refinement: the homepage project presentation uses a connected
 dark technical grid with masked background imagery and equivalent hover/focus
 feedback. Its entrance motion is reduced to avoid competing with interaction;
-the `/work` index and Phase 5 scope remain unchanged.
+the project data model and Phase 5 scope remain unchanged.
 
 Approved visual-system refinement: all public routes now share one restrained
 dark-charcoal theme and a wider visual shell while retaining capped reading
@@ -93,13 +93,23 @@ this remains a Phase 4 presentation refinement and does not open Phase 5.
 Background-depth refinement: the public route group uses one static, fixed CSS
 dot-grid and ambient layer behind scrolling content. The layer is decorative,
 pointer-transparent, dependency-free, and intentionally has no parallax or new
-animation lifecycle.
+animation lifecycle. Public section wrappers stay transparent by default so the
+grid remains continuous; local surfaces are limited to functional interactive,
+form, dialog, and media elements that need contrast.
+
+Public information-architecture refinement: `/` is now the canonical one-page
+portfolio in the order Hero, About, Selected Projects, Services, Technology,
+Testimonials, and Contact. Navigation links to the homepage anchors except for
+the scalable `/projects` index; `/projects/[slug]` remains the canonical case
+study route. The former `/work`, standalone About, Services, and Contact URLs
+permanently redirect and are excluded from the sitemap.
 
 Goal: add restrained Kiran-inspired choreography to the finished static design.
 
 - Install GSAP and Lenis only.
 - Build a small motion boundary and shared reveal primitives/tokens.
-- Implement the three approved moments: hero reveal, selected-work interactions, featured-case-study transition.
+- Preserve the focused hero, selected-project, and closing-contact motion
+  moments without adding decorative animation to the one-page IA.
 - Add subtle shared section reveals only where they improve hierarchy; omit
   count-up behavior because the current content has no meaningful statistic.
 - Synchronize Lenis/ScrollTrigger without duplicate RAF loops; clean up on navigation.

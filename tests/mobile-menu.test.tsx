@@ -4,12 +4,12 @@ import { describe, expect, it, vi } from "vitest";
 import { MobileMenu } from "@/components/layout/mobile-menu";
 
 vi.mock("next/navigation", () => ({
-  usePathname: () => "/work/northline-build",
+  usePathname: () => "/projects/northline-build",
 }));
 
 const items = [
-  { label: "Work", href: "/work" },
-  { label: "About", href: "/about" },
+  { label: "ABOUT", href: "/#about" },
+  { label: "PROJECTS", href: "/projects" },
 ];
 
 describe("MobileMenu", () => {
@@ -21,7 +21,7 @@ describe("MobileMenu", () => {
 
     expect(trigger).toHaveAttribute("aria-expanded", "false");
     expect(
-      screen.getByRole("link", { name: "Work", hidden: true }),
+      screen.getByRole("link", { name: "PROJECTS", hidden: true }),
     ).toHaveAttribute("aria-current", "page");
 
     fireEvent.click(trigger);

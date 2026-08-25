@@ -23,15 +23,16 @@ export async function generateMetadata({
   const project = await getCachedProjectBySlug(slug);
   if (!project) return {};
   const socialImage = project.heroMedia ?? project.thumbnail;
+
   return {
     title: project.seo.title ?? project.title,
     description: project.seo.description ?? project.summary,
-    alternates: { canonical: `/work/${project.slug}` },
+    alternates: { canonical: `/projects/${project.slug}` },
     openGraph: {
       type: "article",
       title: project.seo.title ?? project.title,
       description: project.seo.description ?? project.summary,
-      url: `/work/${project.slug}`,
+      url: `/projects/${project.slug}`,
       images: socialImage
         ? [
             {
@@ -56,12 +57,14 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
   const { slug } = await params;
   const projectDto = await getCachedProjectBySlug(slug);
   if (!projectDto) notFound();
+
   const project = projectDetailToView(projectDto);
   const projects = (await getCachedPublishedProjects()).map(
     projectSummaryToView,
   );
   const currentIndex = projects.findIndex((item) => item.slug === slug);
   const nextProject = projects[(currentIndex + 1) % projects.length] ?? project;
+
   return (
     <main id="main-content" tabIndex={-1}>
       <CaseStudyHero project={project} />
@@ -76,7 +79,7 @@ export default async function ProjectPage({ params }: ProjectPageProps) {
               <h2 id="next-project" className="text-heading font-medium">
                 {nextProject.title}
               </h2>
-              <TextLink className="mt-6" href={`/work/${nextProject.slug}`}>
+              <TextLink className="mt-6" href={`/projects/${nextProject.slug}`}>
                 View case study
               </TextLink>
             </div>

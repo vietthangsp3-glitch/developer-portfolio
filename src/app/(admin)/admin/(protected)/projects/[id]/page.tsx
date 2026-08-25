@@ -33,7 +33,7 @@ export default async function EditProjectPage({
       <AdminPageHeader
         eyebrow="Projects"
         title={project.title}
-        description={`Edit /work/${project.slug}. Published changes invalidate the related public routes.`}
+        description={`Edit /projects/${project.slug}. Published changes invalidate the related public routes.`}
       />
       <ProjectForm
         media={media.map(({ id: mediaId, altText, url }) => ({

@@ -42,7 +42,7 @@ export default async function AdminProjectsPage() {
                   ) : null}
                 </div>
                 <p className="text-muted-foreground mt-1 truncate text-sm">
-                  /work/{project.slug} · order {project.sortOrder}
+                  /projects/{project.slug} · order {project.sortOrder}
                 </p>
               </div>
               <Link

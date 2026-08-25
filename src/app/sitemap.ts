@@ -4,7 +4,7 @@ import { isProductionIndexingEnabled } from "@/config/seo";
 import { siteConfig } from "@/config/site";
 import { getPublishedProjects } from "@/server/dal/projects";
 
-const staticRoutes = ["", "/work", "/about", "/services", "/contact"];
+const staticRoutes = ["", "/projects"];
 
 function absoluteUrl(value: string) {
   return new URL(value, siteConfig.url).toString();
@@ -13,8 +13,8 @@ function absoluteUrl(value: string) {
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticEntries: MetadataRoute.Sitemap = staticRoutes.map((path) => ({
     url: `${siteConfig.url}${path}`,
-    changeFrequency: path === "" || path === "/work" ? "weekly" : "monthly",
-    priority: path === "" ? 1 : path === "/work" ? 0.9 : 0.7,
+    changeFrequency: "weekly",
+    priority: path === "" ? 1 : 0.9,
   }));
 
   try {
@@ -22,7 +22,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     return [
       ...staticEntries,
       ...projects.map((project) => ({
-        url: `${siteConfig.url}/work/${project.slug}`,
+        url: `${siteConfig.url}/projects/${project.slug}`,
         changeFrequency: "monthly" as const,
         priority: 0.8,
         images: project.thumbnail

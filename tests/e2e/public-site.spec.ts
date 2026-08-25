@@ -2,17 +2,22 @@ import { expect, test } from "@playwright/test";
 
 const routes = [
   "/",
-  "/work",
-  "/work/northline-build",
-  "/work/field-notes-supply",
-  "/work/atlas-weekends",
-  "/work/studio-ledger",
-  "/work/relay-operations",
-  "/work/kinetic-type-lab",
-  "/about",
-  "/services",
-  "/contact",
+  "/projects",
+  "/projects/northline-build",
+  "/projects/field-notes-supply",
+  "/projects/atlas-weekends",
+  "/projects/studio-ledger",
+  "/projects/relay-operations",
+  "/projects/kinetic-type-lab",
 ];
+
+const legacyRedirects = [
+  ["/work", "/projects"],
+  ["/work/northline-build", "/projects/northline-build"],
+  ["/about", "/#about"],
+  ["/services", "/#services"],
+  ["/contact", "/#contact"],
+] as const;
 
 const viewports = [
   { width: 375, height: 812 },
@@ -34,6 +39,56 @@ test("all public routes render one clear page heading", async ({ page }) => {
   }
 });
 
+test("public navigation exposes the one-page anchors and project index only", async ({
+  page,
+}) => {
+  await page.goto("/");
+
+  const navigation = page.getByRole("navigation", {
+    name: "Primary navigation",
+  });
+  await expect(navigation.getByRole("link")).toHaveCount(4);
+  await expect(navigation.getByRole("link").allTextContents()).resolves.toEqual(
+    ["ABOUT", "PROJECTS", "SERVICES", "CONTACT"],
+  );
+
+  await expect(navigation.getByRole("link", { name: "ABOUT" })).toHaveAttribute(
+    "href",
+    "/#about",
+  );
+  await expect(
+    navigation.getByRole("link", { name: "PROJECTS" }),
+  ).toHaveAttribute("href", "/projects");
+  await expect(
+    navigation.getByRole("link", { name: "SERVICES" }),
+  ).toHaveAttribute("href", "/#services");
+  await expect(
+    navigation.getByRole("link", { name: "CONTACT" }),
+  ).toHaveAttribute("href", "/#contact");
+
+  for (const id of ["about", "services", "contact"]) {
+    await expect(page.locator(`#${id}`)).toHaveCount(1);
+  }
+
+  await page.goto("/projects/northline-build");
+  await page
+    .getByRole("navigation", { name: "Primary navigation" })
+    .getByRole("link", { name: "ABOUT" })
+    .click();
+  await expect(page).toHaveURL(/\/#about$/);
+  await expect(page.locator("#about")).toBeVisible();
+});
+
+test("legacy public routes permanently redirect to canonical destinations", async ({
+  request,
+}) => {
+  for (const [source, destination] of legacyRedirects) {
+    const response = await request.get(source, { maxRedirects: 0 });
+    expect(response.status(), `${source} should be permanent`).toBe(308);
+    expect(response.headers().location).toBe(destination);
+  }
+});
+
 test("homepage remains overflow-free across supported widths", async ({
   page,
 }) => {
@@ -51,6 +106,27 @@ test("homepage remains overflow-free across supported widths", async ({
   }
 });
 
+test("homepage limits featured projects while the project index renders all published work", async ({
+  page,
+}) => {
+  await page.goto("/");
+  const selectedCards = page.locator("#selected-projects .project-cell");
+  const selectedCount = await selectedCards.count();
+  expect(selectedCount).toBeGreaterThan(0);
+  expect(selectedCount).toBeLessThanOrEqual(6);
+  await expect(
+    page.getByRole("link", { name: "View all projects" }),
+  ).toHaveAttribute("href", "/projects");
+
+  await page.goto("/projects");
+  const allCards = page.locator(".project-cell");
+  expect(await allCards.count()).toBeGreaterThanOrEqual(selectedCount);
+  await expect(allCards.first().getByRole("link")).toHaveAttribute(
+    "href",
+    /\/projects\/[a-z0-9-]+/,
+  );
+});
+
 test("public testimonial reads exclude pre-launch demo proof", async ({
   page,
 }) => {
@@ -61,7 +137,7 @@ test("public testimonial reads exclude pre-launch demo proof", async ({
   ).toBeVisible();
 });
 
-test("public background remains fixed, decorative, and non-interactive", async ({
+test("public background remains fixed and continuous behind transparent sections", async ({
   page,
 }) => {
   await page.goto("/");
@@ -91,6 +167,39 @@ test("public background remains fixed, decorative, and non-interactive", async (
   expect(
     await background.evaluate((element) => element.getBoundingClientRect().top),
   ).toBe(0);
+
+  for (const route of routes) {
+    await page.goto(route);
+
+    const opaqueWrappers = await page
+      .locator(".site-foreground > header, main > header, main section, footer")
+      .evaluateAll((elements) =>
+        elements
+          .filter(
+            (element) =>
+              window.getComputedStyle(element).backgroundColor !==
+              "rgba(0, 0, 0, 0)",
+          )
+          .map((element) => element.outerHTML.slice(0, 120)),
+      );
+
+    expect(
+      opaqueWrappers,
+      `${route} should keep public wrappers transparent`,
+    ).toEqual([]);
+  }
+
+  await page.goto("/");
+  await expect(page.locator(".project-cell").first()).not.toHaveCSS(
+    "background-color",
+    "rgba(0, 0, 0, 0)",
+  );
+
+  await page.goto("/#contact");
+  await expect(page.getByLabel("Name")).not.toHaveCSS(
+    "background-color",
+    "rgba(0, 0, 0, 0)",
+  );
 });
 
 test("homepage motion settles without runtime errors", async ({ page }) => {
@@ -118,9 +227,9 @@ test("homepage motion settles without runtime errors", async ({ page }) => {
     )
     .toBe(true);
 
-  await page.locator("[data-featured-case-study]").scrollIntoViewIfNeeded();
+  await page.locator("#contact").scrollIntoViewIfNeeded();
   await expect(
-    page.getByRole("link", { name: "Read the case study" }),
+    page.getByRole("button", { name: "Send enquiry" }),
   ).toBeVisible();
   expect(runtimeErrors).toEqual([]);
 });
@@ -193,12 +302,12 @@ test("reduced motion exposes complete, navigable homepage content", async ({
   ).toBeVisible();
 
   const projectLinks = page
-    .locator('[aria-labelledby="selected-work-title"]')
+    .locator('[aria-labelledby="selected-projects-title"]')
     .getByRole("link");
   await expect(projectLinks).toHaveCount(5);
   await expect(projectLinks.nth(0)).toHaveAttribute(
     "href",
-    "/work/northline-build",
+    "/projects/northline-build",
   );
   for (let step = 0; step < 12; step += 1) {
     if (
@@ -213,7 +322,7 @@ test("reduced motion exposes complete, navigable homepage content", async ({
   await expect(projectLinks.nth(0)).toBeFocused();
 
   const animatedElements = page.locator(
-    "[data-hero-line], [data-project-media], [data-project-meta], [data-featured-intro], [data-featured-media], [data-featured-meta]",
+    "[data-hero-line], [data-project-media], [data-project-meta]",
   );
   const hiddenElements = await animatedElements.evaluateAll(
     (elements) =>
@@ -225,15 +334,15 @@ test("reduced motion exposes complete, navigable homepage content", async ({
 
   expect(hiddenElements).toBe(0);
   await expect(
-    page.getByRole("link", { name: "Read the case study" }),
-  ).toHaveAttribute("href", "/work/northline-build");
+    page.getByRole("link", { name: "View all projects" }),
+  ).toHaveAttribute("href", "/projects");
 });
 
 test("keyboard and mobile navigation preserve focus and route context", async ({
   page,
 }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await page.goto("/work/northline-build");
+  await page.goto("/projects/northline-build");
 
   await page.keyboard.press("Tab");
   await expect(
@@ -244,7 +353,7 @@ test("keyboard and mobile navigation preserve focus and route context", async ({
   await menuButton.click();
   const dialog = page.getByRole("dialog", { name: "Site menu" });
   await expect(dialog).toBeVisible();
-  await expect(dialog.getByRole("link", { name: "Work" })).toHaveAttribute(
+  await expect(dialog.getByRole("link", { name: "PROJECTS" })).toHaveAttribute(
     "aria-current",
     "page",
   );
@@ -259,7 +368,7 @@ test("contact form is labelled, responsive, and reports validation", async ({
 }) => {
   for (const width of [375, 390, 768, 1024, 1280, 1440, 1920]) {
     await page.setViewportSize({ width, height: 900 });
-    await page.goto("/contact");
+    await page.goto("/#contact");
     await expect(page.getByLabel("Name")).toBeVisible();
     await expect(page.getByLabel("Email")).toHaveAttribute("type", "email");
     await expect(page.getByLabel("Project type")).toBeVisible();
@@ -288,7 +397,7 @@ test("public not-found and metadata endpoints fail safely", async ({
     page.getByRole("heading", { name: "This page is not part of the index." }),
   ).toBeVisible();
 
-  await page.goto("/work/not-a-published-project");
+  await page.goto("/projects/not-a-published-project");
   await expect(
     page.getByRole("heading", { name: "This page is not part of the index." }),
   ).toBeVisible();
@@ -299,11 +408,16 @@ test("public not-found and metadata endpoints fail safely", async ({
 
   const sitemap = await request.get("/sitemap.xml");
   expect(sitemap.ok()).toBe(true);
-  const expectedWorkUrl = new URL(
-    "/work",
+  const expectedProjectsUrl = new URL(
+    "/projects",
     process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000",
   ).toString();
-  expect(await sitemap.text()).toContain(expectedWorkUrl);
+  const sitemapText = await sitemap.text();
+  expect(sitemapText).toContain(expectedProjectsUrl);
+  expect(sitemapText).not.toContain("/work");
+  expect(sitemapText).not.toContain("/about");
+  expect(sitemapText).not.toContain("/services");
+  expect(sitemapText).not.toContain("/contact");
 });
 
 test("security headers are present without prematurely enforcing CSP", async ({

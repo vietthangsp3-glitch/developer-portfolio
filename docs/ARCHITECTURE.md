@@ -26,10 +26,15 @@ The repository now has its approved public experience and Phase 6 auth/admin fou
 - Local generated project media is delivered through `next/image` with explicit aspect ratios and responsive `sizes`.
 - Editorial project layouts alternate wide and standard media contracts without changing the typed content model.
 - Playwright separates safe public/read-only coverage from authenticated mutations. The admin suite refuses production and requires explicit development confirmation, credentials, and an exact expected Neon hostname.
-- GSAP is dynamically imported inside scoped leaf Client Components for the hero, selected-work, featured-case-study, and closing-contact reveals.
+- GSAP is dynamically imported inside scoped leaf Client Components for the hero, selected-projects, and closing-contact reveals.
 - The homepage hero is an identity-led first viewport: the configured owner name forms the primary visual object, while compact role, introduction, and selected-work metadata provide context without agency-style sales framing.
 - Each major hero-name word owns a small dependency-free scramble island. The visual layer is ignored by assistive technology, retains stable width, runs only for precise hover pointers, and always resolves to the original text.
-- Homepage Selected Work uses a dark, connected technical grid with full-cell project imagery, left-to-right image masking, compact mono metadata, and hover/focus image clarification. The separate `/work` index retains its lighter editorial presentation.
+- The homepage is a one-page portfolio ordered Hero, About, Selected Projects,
+  Services, Technology, Testimonials, and Contact. About, Services, and Contact
+  are addressable by stable anchors; only featured projects appear on the
+  homepage. Both Selected Projects and the scalable `/projects` index use the
+  dark connected technical grid with masked imagery and equivalent hover/focus
+  clarification.
 - Lenis is a progressive desktop wheel-scroll enhancement, synchronized through GSAP's ticker and disabled for reduced motion and coarse pointers.
 - Automated browser coverage verifies the animated hero settles, reduced-motion content remains final and navigable, and the homepage produces no runtime errors.
 - `tsconfig.json` is strict and maps `@/*` to `src/*`.
@@ -100,10 +105,13 @@ Folders are created only when their phase begins; this is the intended mature tr
 
 ### Public routes
 
-- `/`: mostly static shell with cached published project/testimonial data.
-- `/work`: cached published project index.
-- `/work/[slug]`: published case study or `notFound()`; metadata derives from a safe project SEO DTO.
-- `/about`, `/services`, `/contact`: static except the contact form action.
+- `/`: canonical one-page portfolio with cached featured projects, published
+  services/testimonials, and the contact Server Action at `#contact`.
+- `/projects`: cached index of every published project.
+- `/projects/[slug]`: published case study or `notFound()`; metadata derives
+  from a safe project SEO DTO.
+- `/work`, `/work/[slug]`, `/about`, `/services`, and `/contact` are permanent
+  compatibility redirects to their canonical project or homepage-anchor URLs.
 
 Public project pages use Server Components and direct DAL calls. Admin publication mutations invalidate the project list, affected slug, sitemap, and homepage tags/paths. Draft projects never appear in public queries or metadata.
 
@@ -189,8 +197,11 @@ The approved public-site baseline is a single dark theme. It uses lifted charcoa
 A single decorative fixed layer sits behind the public route group. CSS radial
 gradients create a low-contrast dot matrix and faint cool-neutral ambient
 variation; a mask softens the pattern toward the viewport edges. The layer is
-non-interactive and stationary, while selective opaque surfaces provide content
-separation. It does not use scroll listeners, canvas, image assets, or parallax.
+non-interactive and stationary. Public section wrappers remain transparent so
+the layer reads as one continuous canvas; spacing, type hierarchy, and thin
+rules provide section separation. Opaque or semi-opaque surfaces are reserved
+for functional UI such as project panels, form controls, dialogs, and media
+fallbacks. It does not use scroll listeners, canvas, image assets, or parallax.
 
 ```css
 --background: #111310; /* near-black charcoal canvas */
@@ -242,7 +253,8 @@ Build only reusable primitives with demonstrated use: `Container`, `Section`, `S
 ### Responsibility split
 
 - CSS: links, buttons, focus, menu icon, small image transforms, and color/opacity transitions.
-- GSAP: hero timeline, masked text lines, coordinated section reveals, featured-case-study transition, and ScrollTrigger behavior.
+- GSAP: hero timeline, masked text lines, selected-project reveals, coordinated
+  contact reveal, and ScrollTrigger behavior.
 - Lenis: optional smooth-scroll enhancement on capable devices; native scroll remains the fallback.
 
 Do not use JavaScript for motion that CSS expresses cleanly. GSAP code lives in leaf Client Components and is dynamically imported where this prevents unrelated routes from receiving it.
@@ -262,15 +274,28 @@ Do not use JavaScript for motion that CSS expresses cleanly. GSAP code lives in 
 --stagger-base: 80ms;
 ```
 
-### Three homepage moments
+### Homepage motion moments
 
 1. Hero: a single load sequence revealing the configured owner name as two masked lines, then role, introduction, and selected-work cue. Each name word may scramble independently on precise pointer hover. No blocking preloader.
-2. Selected work: editorial rows/cards react with restrained image scale/crop and metadata movement; keyboard focus receives the equivalent state.
-3. Featured case study: image and text transition through one scroll-linked composition with a bounded duration, not a long pinned takeover.
+2. Selected projects: technical cells react with restrained image clarity/scale
+   and metadata movement; keyboard focus receives the equivalent state.
+3. Contact: the closing section uses the shared subtle reveal without a pinned
+   or scroll-linked takeover.
 
-The implemented motion layer leaves capabilities, about, technology, and testimonials static; only the closing contact prompt uses the shared subtle reveal. Statistics remain static because the current content has no value that benefits from interpolation. No custom cursor, scroll hijacking, endless loops, or mobile-only spectacle.
+The implemented motion layer leaves About, Services, Technology, and
+Testimonials static; only the closing Contact section uses the shared subtle
+reveal. Statistics remain static because the current content has no value that
+benefits from interpolation. No custom cursor, scroll hijacking, endless loops,
+or mobile-only spectacle.
 
-The hero uses a roughly one-second two-line name reveal followed by metadata and the work cue. Its dependency-free character scramble preserves the original accessible text, does not change layout width, and never runs on touch/coarse pointers or reduced motion. Selected-work cells use a short image fade plus restrained metadata translation; CSS independently owns hover/focus blur, opacity, and scale so the entrance timeline never overrides interaction state. The featured case study uses one entrance timeline plus a short, unpinned desktop image-scale scrub; mobile receives a one-time reveal without scrub. Every animated element is present in its readable final state before JavaScript runs.
+The hero uses a roughly one-second two-line name reveal followed by metadata and
+the projects cue. Its dependency-free character scramble preserves the original
+accessible text, does not change layout width, and never runs on touch/coarse
+pointers or reduced motion. Selected-project cells use a short image fade plus
+restrained metadata translation; CSS independently owns hover/focus blur,
+opacity, and scale so the entrance timeline never overrides interaction state.
+Every animated element is present in its readable final state before JavaScript
+runs.
 
 Reduced-motion mode disables Lenis, scrub/pin effects, parallax, count-up interpolation, and stagger delays. It presents final states immediately while retaining small functional focus/color feedback. GSAP uses scoped contexts and cleanup; Lenis and ScrollTrigger share one ticker where introduced.
 

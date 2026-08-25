@@ -49,8 +49,8 @@ function revalidateProjects(slug?: string) {
   updateTag("projects");
   if (slug) updateTag(`project:${slug}`);
   revalidatePath("/");
-  revalidatePath("/work");
-  if (slug) revalidatePath(`/work/${slug}`);
+  revalidatePath("/projects");
+  if (slug) revalidatePath(`/projects/${slug}`);
   revalidatePath("/admin/projects");
 }
 
@@ -194,7 +194,6 @@ export async function saveServiceAction(
       metadata: { slug: result.slug, published: input.published },
     });
     revalidatePath("/");
-    revalidatePath("/services");
     updateTag("services");
     revalidatePath("/admin/services");
     return { status: "success", message: "Service saved." };
@@ -218,7 +217,7 @@ export async function deleteServiceAction(formData: FormData) {
     entityId: id,
     metadata: {},
   });
-  revalidatePath("/services");
+  revalidatePath("/");
   updateTag("services");
   revalidatePath("/admin/services");
 }

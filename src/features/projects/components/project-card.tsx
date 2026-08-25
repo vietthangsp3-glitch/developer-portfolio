@@ -28,7 +28,7 @@ export function ProjectCard({
         data-project-layout="technical"
       >
         <Link
-          href={`/work/${project.slug}`}
+          href={`/projects/${project.slug}`}
           className="flex min-h-[inherit] flex-col p-5 no-underline md:p-6"
         >
           <div className="absolute inset-0 overflow-hidden" data-project-media>
@@ -81,7 +81,7 @@ export function ProjectCard({
       className={`group border-border border-t pt-4 ${isWide ? "lg:col-span-2" : ""}`}
       data-project-layout={layout}
     >
-      <Link href={`/work/${project.slug}`} className="block no-underline">
+      <Link href={`/projects/${project.slug}`} className="block no-underline">
         <div
           className={`bg-surface-strong relative overflow-hidden ${
             isWide

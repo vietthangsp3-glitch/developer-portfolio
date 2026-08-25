@@ -1,25 +1,25 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 
-vi.mock("@/server/dal/public", () => ({
-  getResolvedPublicSiteSettings: vi.fn(async () => ({
-    siteName: "CMS Name",
-    siteTitle: "CMS title",
-    siteDescription: "CMS description",
-    availability: "Available in October",
-    contactEmail: "cms@example.com",
-    socialLinks: [],
-    seoTitle: "CMS SEO title",
-    seoDescription: "CMS SEO description",
-  })),
-}));
-
-import ContactPage from "@/app/(site)/contact/page";
 import { SiteFooter } from "@/components/layout/site-footer";
+import { HomeContactDetails } from "@/features/home/components/home-page";
 
 describe("site settings public surfaces", () => {
-  it("renders CMS contact and availability values on Contact", async () => {
-    render(await ContactPage());
+  it("renders CMS contact and availability values on the homepage", () => {
+    render(
+      <HomeContactDetails
+        settings={{
+          siteName: "CMS Name",
+          siteTitle: "CMS title",
+          siteDescription: "CMS description",
+          availability: "Available in October",
+          contactEmail: "cms@example.com",
+          socialLinks: [],
+          seoTitle: "CMS SEO title",
+          seoDescription: "CMS SEO description",
+        }}
+      />,
+    );
 
     expect(
       screen.getByRole("link", { name: "cms@example.com" }),

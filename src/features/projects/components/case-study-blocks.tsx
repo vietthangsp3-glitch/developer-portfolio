@@ -35,7 +35,7 @@ export function CaseStudyBlocks({ blocks }: { blocks: CaseStudyBlock[] }) {
             <section
               key={index}
               aria-label="Project outcomes"
-              className="py-section-compact bg-surface"
+              className="py-section-compact"
             >
               <Container className="grid grid-cols-1 gap-10 md:grid-cols-3">
                 {block.items.map((item) => (
@@ -68,7 +68,7 @@ export function CaseStudyBlocks({ blocks }: { blocks: CaseStudyBlock[] }) {
 
         if (block.type === "technical-summary") {
           return (
-            <section key={index} className="bg-surface py-section-compact">
+            <section key={index} className="py-section-compact">
               <Container>
                 <div className="border-border grid grid-cols-4 gap-x-4 gap-y-8 border-t pt-4 md:grid-cols-8 md:gap-x-6 lg:grid-cols-12">
                   <p className="text-label text-accent col-span-4 font-mono uppercase md:col-span-2 lg:col-span-3">

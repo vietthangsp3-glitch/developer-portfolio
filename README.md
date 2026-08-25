@@ -62,6 +62,9 @@ npm run production:check # validate a complete production environment without pr
 
 - Application routes and source live under `src/`.
 - Public pages use the `(site)` route group and Server Components by default.
+- `/` is the canonical one-page portfolio; `/projects` and
+  `/projects/[slug]` are the scalable, indexable project area. Retired public
+  page URLs permanently redirect to these canonical routes or homepage anchors.
 - Site identity and navigation are centralized in `src/config/site.ts`.
 - Semantic design tokens live in `src/app/globals.css` and are exposed to
   Tailwind CSS 4.

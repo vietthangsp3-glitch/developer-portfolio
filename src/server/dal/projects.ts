@@ -1,6 +1,6 @@
 import "server-only";
 
-import { and, asc, desc, eq, inArray, isNotNull, lte } from "drizzle-orm";
+import { and, asc, desc, eq, inArray, lte } from "drizzle-orm";
 import { alias } from "drizzle-orm/pg-core";
 
 import { slugSchema } from "@/lib/validation";
@@ -108,12 +108,12 @@ export async function getPublishedProjects(): Promise<
   });
 }
 
-export async function getFeaturedProjects(
+export async function getSelectedProjects(
   limit = 4,
 ): Promise<PublicProjectSummaryDto[]> {
   const safeLimit = Math.min(Math.max(Math.trunc(limit), 1), 20);
 
-  return runDatabaseOperation("getFeaturedProjects", async () => {
+  return runDatabaseOperation("getSelectedProjects", async () => {
     const rows = await getDatabase()
       .select({ project: projectFields, thumbnail: thumbnailFields })
       .from(projects)
@@ -124,11 +124,14 @@ export async function getFeaturedProjects(
       .where(
         and(
           eq(projects.status, "published"),
-          isNotNull(projects.featuredRank),
           lte(projects.publishedAt, new Date()),
         ),
       )
-      .orderBy(asc(projects.featuredRank), asc(projects.sortOrder))
+      .orderBy(
+        asc(projects.featuredRank),
+        asc(projects.sortOrder),
+        desc(projects.publishedAt),
+      )
       .limit(safeLimit);
 
     const technologiesByProject = await getTechnologyMap(

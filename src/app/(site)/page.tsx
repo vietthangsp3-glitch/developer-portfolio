@@ -1,29 +1,25 @@
 import { HomePage } from "@/features/home/components/home-page";
 import {
   projectSummaryToView,
-  getCachedFeaturedProjects,
-  getCachedPublishedProjects,
+  getCachedPublishedServices,
   getCachedPublishedTestimonials,
   getCachedPublicSiteSettings,
+  getCachedSelectedProjects,
 } from "@/server/dal/public";
 
 export default async function Home() {
-  const [projects, featuredProjects, testimonials, settings] =
+  const [selectedProjects, services, testimonials, settings] =
     await Promise.all([
-      getCachedPublishedProjects(),
-      getCachedFeaturedProjects(),
+      getCachedSelectedProjects(),
+      getCachedPublishedServices(),
       getCachedPublishedTestimonials(),
       getCachedPublicSiteSettings(),
     ]);
   return (
     <main id="main-content" tabIndex={-1}>
       <HomePage
-        projects={projects.map(projectSummaryToView)}
-        featuredProject={
-          featuredProjects[0]
-            ? projectSummaryToView(featuredProjects[0])
-            : undefined
-        }
+        selectedProjects={selectedProjects.map(projectSummaryToView)}
+        services={services}
         testimonials={testimonials}
         settings={settings}
       />

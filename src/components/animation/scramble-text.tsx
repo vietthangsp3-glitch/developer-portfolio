@@ -43,7 +43,7 @@ function createRandomizedText(text: string) {
 }
 
 export function ScrambleText({ text, className = "" }: ScrambleTextProps) {
-  const resolvedText = text.toUpperCase();
+  const resolvedText = text;
   const [displayText, setDisplayText] = useState(resolvedText);
   const restoreTimerRef = useRef<number | null>(null);
 

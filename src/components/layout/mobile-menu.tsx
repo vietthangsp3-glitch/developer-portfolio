@@ -63,8 +63,9 @@ export function MobileMenu({ items }: MobileMenuProps) {
                   <Link
                     href={item.href}
                     aria-current={
-                      pathname === item.href ||
-                      pathname.startsWith(`${item.href}/`)
+                      !item.href.includes("#") &&
+                      (pathname === item.href ||
+                        pathname.startsWith(`${item.href}/`))
                         ? "page"
                         : undefined
                     }

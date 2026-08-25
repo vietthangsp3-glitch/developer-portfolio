@@ -23,6 +23,19 @@ const contentSecurityPolicy = [
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  async redirects() {
+    return [
+      { source: "/work", destination: "/projects", permanent: true },
+      {
+        source: "/work/:slug",
+        destination: "/projects/:slug",
+        permanent: true,
+      },
+      { source: "/about", destination: "/#about", permanent: true },
+      { source: "/services", destination: "/#services", permanent: true },
+      { source: "/contact", destination: "/#contact", permanent: true },
+    ];
+  },
   async headers() {
     const securityHeaders = [
       {

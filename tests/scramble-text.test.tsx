@@ -40,6 +40,16 @@ afterEach(() => {
 });
 
 describe("ScrambleText", () => {
+  it("preserves the supplied casing in its resolved state", () => {
+    mockMotionPreferences({});
+
+    const { container } = render(<ScrambleText text="Thang" />);
+
+    expect(container.querySelector("[data-scramble-visual]")).toHaveTextContent(
+      "Thang",
+    );
+  });
+
   it("performs one fixed-length substitution and restores the original", () => {
     vi.useFakeTimers();
     mockMotionPreferences({});

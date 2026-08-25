@@ -13,9 +13,9 @@ import type {
   PublicProjectSummaryDto,
 } from "@/server/dal/dto";
 import {
-  getFeaturedProjects,
   getProjectBySlug,
   getPublishedProjects,
+  getSelectedProjects,
 } from "@/server/dal/projects";
 import { resolvePublicSiteSettings } from "@/server/dal/mappers";
 
@@ -75,9 +75,9 @@ export const getCachedPublishedProjects = unstable_cache(
   ["public-projects"],
   { revalidate: 3600, tags: ["projects"] },
 );
-export const getCachedFeaturedProjects = unstable_cache(
-  () => getFeaturedProjects(4),
-  ["public-featured-projects"],
+export const getCachedSelectedProjects = unstable_cache(
+  () => getSelectedProjects(4),
+  ["public-selected-projects"],
   { revalidate: 3600, tags: ["projects"] },
 );
 export const getCachedProjectBySlug = (slug: string) =>

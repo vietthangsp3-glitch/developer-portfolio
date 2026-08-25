@@ -234,6 +234,90 @@ test("homepage motion settles without runtime errors", async ({ page }) => {
   expect(runtimeErrors).toEqual([]);
 });
 
+test("route navigation resets scroll without breaking intentional anchors", async ({
+  page,
+}) => {
+  await page.emulateMedia({ reducedMotion: "no-preference" });
+  await page.setViewportSize({ width: 1280, height: 900 });
+  const runtimeErrors: string[] = [];
+  page.on("console", (message) => {
+    if (message.type() === "error") runtimeErrors.push(message.text());
+  });
+  page.on("pageerror", (error) => runtimeErrors.push(error.message));
+  await page.goto("/");
+  await expect
+    .poll(() =>
+      page.evaluate(() => document.documentElement.classList.contains("lenis")),
+    )
+    .toBe(true);
+
+  const primaryNavigation = page.getByRole("navigation", {
+    name: "Primary navigation",
+  });
+  const scrollToPageEnd = async () => {
+    await page.mouse.wheel(0, 100_000);
+    await expect
+      .poll(() =>
+        page.evaluate(
+          () =>
+            Math.abs(
+              window.scrollY -
+                (document.documentElement.scrollHeight - window.innerHeight),
+            ) < 1,
+        ),
+      )
+      .toBe(true);
+  };
+
+  for (let repetition = 0; repetition < 5; repetition += 1) {
+    await scrollToPageEnd();
+    await primaryNavigation.getByRole("link", { name: "PROJECTS" }).click();
+    await expect(page).toHaveURL(/\/projects$/);
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+
+    await scrollToPageEnd();
+    await page.locator(".site-foreground > header a[href='/']").click();
+    await expect(page).toHaveURL(/\/$/);
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+  }
+
+  await scrollToPageEnd();
+  await primaryNavigation.getByRole("link", { name: "CONTACT" }).click();
+  await expect(page).toHaveURL(/\/#contact$/);
+
+  const contact = page.locator("#contact");
+  const contactReveal = contact.locator("..");
+  const header = page.locator(".site-foreground > header");
+  await expect
+    .poll(async () => {
+      const contactTop = await contact.evaluate(
+        (element) => element.getBoundingClientRect().top,
+      );
+      const headerHeight = await header.evaluate(
+        (element) => element.getBoundingClientRect().height,
+      );
+      return contactTop >= headerHeight;
+    })
+    .toBe(true);
+  await expect(
+    page.getByRole("button", { name: "Send enquiry" }),
+  ).toBeVisible();
+  await expect(contactReveal).toHaveCSS("opacity", "1");
+  await expect(contactReveal).toHaveCSS("visibility", "visible");
+
+  await primaryNavigation.getByRole("link", { name: "PROJECTS" }).click();
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+  await page.goBack();
+  await expect(page).toHaveURL(/\/#contact$/);
+  await expect(
+    page.getByRole("button", { name: "Send enquiry" }),
+  ).toBeVisible();
+  await page.goForward();
+  await expect(page).toHaveURL(/\/projects$/);
+  await expect.poll(() => page.evaluate(() => window.scrollY)).toBe(0);
+  expect(runtimeErrors).toEqual([]);
+});
+
 test("selected work hover and focus reveal imagery without shifting cells", async ({
   page,
 }) => {

@@ -18,17 +18,33 @@ export function Reveal({ children }: { children: ReactNode }) {
       if (cancelled || !scopeRef.current) return;
 
       const context = gsap.context(() => {
-        gsap.from(scopeRef.current, {
-          opacity: 0,
-          duration: 0.52,
-          ease: "power3.out",
-          scrollTrigger: {
-            trigger: scopeRef.current,
-            once: true,
-            start: "top 88%",
+        const element = scopeRef.current;
+        if (!element) return;
+
+        if (element.getBoundingClientRect().top <= window.innerHeight * 0.88) {
+          return;
+        }
+
+        gsap.fromTo(
+          element,
+          { opacity: 0, y: 18 },
+          {
+            duration: 0.52,
+            ease: "power3.out",
+            onComplete: () => {
+              gsap.set(element, {
+                clearProps: "opacity,transform",
+              });
+            },
+            opacity: 1,
+            scrollTrigger: {
+              trigger: element,
+              once: true,
+              start: "top 88%",
+            },
+            y: 0,
           },
-          y: 18,
-        });
+        );
       }, scopeRef);
 
       cleanup = () => context.revert();

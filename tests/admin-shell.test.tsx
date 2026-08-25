@@ -52,6 +52,9 @@ describe("admin interactive foundations", () => {
     expect(
       screen.getAllByRole("link", { name: "Projects" })[0],
     ).toHaveAttribute("href", "/admin/projects");
+    expect(
+      screen.getAllByRole("link", { name: "Dashboard" })[0],
+    ).toHaveAttribute("aria-current", "page");
     expect(screen.getAllByRole("button", { name: "Logout" })).toHaveLength(2);
 
     fireEvent.click(screen.getAllByRole("button", { name: "Logout" })[0]);

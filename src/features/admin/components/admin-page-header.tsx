@@ -10,14 +10,15 @@ export function AdminPageHeader({
   description,
 }: AdminPageHeaderProps) {
   return (
-    <header className="border-border border-b pb-8">
-      <p className="text-accent font-mono text-xs tracking-[0.12em] uppercase">
+    <header className="border-border/70 border-b pb-7">
+      <p className="text-accent flex items-center gap-2 font-mono text-[0.6875rem] tracking-[0.14em] uppercase">
+        <span className="bg-accent size-1.5 rounded-full" aria-hidden="true" />
         {eyebrow}
       </p>
-      <h1 className="mt-3 text-[clamp(2rem,4vw,3.5rem)] leading-none font-medium tracking-[-0.04em]">
+      <h1 className="mt-3 text-[clamp(2rem,3.2vw,3rem)] leading-none font-medium tracking-[-0.035em]">
         {title}
       </h1>
-      <p className="text-muted-foreground mt-4 max-w-2xl text-base leading-relaxed">
+      <p className="text-muted-foreground mt-3 max-w-2xl text-sm leading-6 sm:text-base">
         {description}
       </p>
     </header>

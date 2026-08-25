@@ -26,7 +26,7 @@ export default async function AdminLoginPage({
       id="main-content"
     >
       <section
-        className="border-border w-full max-w-md border p-6 sm:p-9"
+        className="border-border/80 bg-surface/90 w-full max-w-md rounded-md border p-6 shadow-2xl shadow-black/20 sm:p-9"
         aria-labelledby="login-title"
       >
         <p className="text-accent font-mono text-xs tracking-[0.12em] uppercase">

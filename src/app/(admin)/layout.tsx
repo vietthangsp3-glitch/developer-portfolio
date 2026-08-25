@@ -11,5 +11,5 @@ export default function AdminRouteGroupLayout({
 }: {
   children: ReactNode;
 }) {
-  return children;
+  return <div className="admin-root">{children}</div>;
 }

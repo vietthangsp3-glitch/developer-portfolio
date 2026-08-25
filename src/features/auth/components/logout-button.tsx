@@ -20,7 +20,7 @@ export function LogoutButton() {
 
   return (
     <button
-      className="text-muted-foreground hover:text-foreground min-h-11 text-left text-sm transition-colors"
+      className="text-muted-foreground hover:text-foreground min-h-11 px-3 text-left text-sm transition-colors"
       type="button"
       onClick={logout}
       disabled={pending}

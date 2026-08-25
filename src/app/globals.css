@@ -10,6 +10,7 @@
   --muted: #292d28;
   --muted-foreground: #a7aca3;
   --hero-eyebrow: #83949b;
+  --admin-background: #0e100e;
   --border: #363b35;
   --accent: #d07151;
   --accent-foreground: #15120f;
@@ -176,6 +177,39 @@ body {
 .site-foreground {
   position: relative;
   z-index: 1;
+}
+
+.admin-root {
+  position: relative;
+  min-height: 100dvh;
+  isolation: isolate;
+  overflow-x: clip;
+  background: var(--admin-background);
+}
+
+.admin-root::before,
+.admin-root::after {
+  position: fixed;
+  z-index: -1;
+  inset: 0;
+  pointer-events: none;
+  content: "";
+}
+
+.admin-root::before {
+  background-image: radial-gradient(
+    circle,
+    rgb(170 182 177 / 16%) 0.7px,
+    transparent 0.85px
+  );
+  background-size: 25px 25px;
+  opacity: 0.52;
+}
+
+.admin-root::after {
+  background:
+    radial-gradient(circle at 22% 8%, rgb(208 113 81 / 8%), transparent 28rem),
+    radial-gradient(circle at 88% 30%, rgb(56 78 88 / 10%), transparent 32rem);
 }
 
 ::selection {

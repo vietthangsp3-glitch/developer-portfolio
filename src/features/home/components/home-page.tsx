@@ -205,13 +205,13 @@ export function HomePage({
             {services.map((service, index) => (
               <li
                 key={service.slug}
-                className="border-border grid grid-cols-4 gap-x-4 gap-y-5 border-t py-7 md:grid-cols-8 md:gap-x-6 lg:grid-cols-12"
+                className="service-row border-border grid grid-cols-4 gap-x-4 gap-y-5 border-t py-7 md:grid-cols-8 md:gap-x-6 lg:grid-cols-12"
               >
                 <span className="text-label text-accent col-span-1 font-mono">
                   {String(index + 1).padStart(2, "0")}
                 </span>
                 <div className="col-span-3 md:col-span-3 lg:col-span-4">
-                  <h3 className="text-subheading font-medium">
+                  <h3 className="service-row-title text-subheading font-medium">
                     {service.title}
                   </h3>
                   <p className="text-muted-foreground mt-4 max-w-[38ch]">

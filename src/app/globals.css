@@ -259,6 +259,49 @@ a {
   text-underline-offset: 0.18em;
 }
 
+.service-row {
+  position: relative;
+}
+
+.service-row::before {
+  position: absolute;
+  top: -1px;
+  right: 0;
+  left: 0;
+  height: 2px;
+  background: color-mix(in srgb, var(--foreground) 58%, var(--border));
+  content: "";
+  opacity: 0.82;
+  transform: scaleX(0);
+  transform-origin: left;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .service-row:hover::before {
+    transform: scaleX(1);
+  }
+
+  .service-row:hover .service-row-title {
+    filter: brightness(1.08);
+  }
+}
+
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+  .service-row::before {
+    transition: transform var(--duration-base) var(--ease-out);
+  }
+
+  .service-row-title {
+    transition:
+      filter var(--duration-base) var(--ease-out),
+      transform var(--duration-base) var(--ease-out);
+  }
+
+  .service-row:hover .service-row-title {
+    transform: translateY(-0.25rem);
+  }
+}
+
 .project-cell-image {
   filter: blur(5px) saturate(0.72) contrast(0.9);
   opacity: 0.68;

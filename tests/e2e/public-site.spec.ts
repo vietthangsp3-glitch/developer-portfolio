@@ -127,14 +127,13 @@ test("homepage limits featured projects while the project index renders all publ
   );
 });
 
-test("public testimonial reads exclude pre-launch demo proof", async ({
-  page,
-}) => {
+test("homepage omits the testimonial surface", async ({ page }) => {
   await page.goto("/");
   await expect(page.getByText("Sample client 01")).toHaveCount(0);
+  await expect(page.getByText(/Testimonials/i)).toHaveCount(0);
   await expect(
-    page.getByText(/Client references are shared privately/),
-  ).toBeVisible();
+    page.locator('[aria-labelledby="testimonials-title"]'),
+  ).toHaveCount(0);
 });
 
 test("public background remains fixed and continuous behind transparent sections", async ({

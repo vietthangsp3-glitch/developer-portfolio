@@ -11,16 +11,11 @@ import { technologyGroups } from "@/features/content/data/site-content";
 import { ContactForm } from "@/features/inquiries/components/contact-form";
 import { ProjectIndex } from "@/features/projects/components/project-index";
 import type { Project } from "@/features/projects/types";
-import type {
-  PublicServiceDto,
-  PublicSiteSettingsDto,
-  PublicTestimonialDto,
-} from "@/server/dal/dto";
+import type { PublicServiceDto, PublicSiteSettingsDto } from "@/server/dal/dto";
 
 type HomePageProps = {
   selectedProjects: Project[];
   services: PublicServiceDto[];
-  testimonials: PublicTestimonialDto[];
   settings?: PublicSiteSettingsDto | null;
 };
 
@@ -53,7 +48,6 @@ export function HomeContactDetails({
 export function HomePage({
   selectedProjects,
   services,
-  testimonials,
   settings,
 }: HomePageProps) {
   const nameWords = (settings?.siteName ?? siteConfig.name)
@@ -146,17 +140,15 @@ export function HomePage({
             titleClassName="max-w-[15ch]"
             titleId="about-title"
           />
-          <div className="grid grid-cols-4 gap-x-4 md:grid-cols-8 md:gap-x-6 lg:grid-cols-12">
-            <div className="col-span-4 md:col-span-6 md:col-start-3 lg:col-span-7 lg:col-start-5">
-              <p className="text-lead text-muted-foreground max-w-[50ch]">
-                I work across design and engineering because the strongest
-                digital work depends on both. The process stays direct,
-                collaborative, and grounded in what the project actually needs.
-              </p>
-              <TextLink className="mt-8" href="#contact">
-                Discuss a project
-              </TextLink>
-            </div>
+          <div className="ml-home-copy-indent max-w-[50ch]">
+            <p className="text-home-lead text-muted-foreground">
+              I work across design and engineering because the strongest digital
+              work depends on both. The process stays direct, collaborative, and
+              grounded in what the project actually needs.
+            </p>
+            <TextLink className="mt-8" href="#contact">
+              Discuss a project
+            </TextLink>
           </div>
         </Container>
       </section>
@@ -253,68 +245,19 @@ export function HomePage({
             titleClassName="max-w-[13ch]"
             titleId="technology-title"
           />
-          <div className="grid grid-cols-4 gap-x-4 md:grid-cols-8 md:gap-x-6 lg:grid-cols-12">
-            <div className="col-span-4 md:col-span-6 md:col-start-3 lg:col-span-8 lg:col-start-5">
-              <div className="grid gap-8 md:grid-cols-3">
-                {technologyGroups.map((group) => (
-                  <div
-                    key={group.label}
-                    className="border-border border-t pt-3"
-                  >
-                    <h3 className="text-label text-accent font-mono uppercase">
-                      {group.label}
-                    </h3>
-                    <ul className="mt-5 space-y-2">
-                      {group.items.map((item) => (
-                        <li key={item}>{item}</li>
-                      ))}
-                    </ul>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </Container>
-      </section>
-
-      <section aria-labelledby="testimonials-title" className="py-home-section">
-        <Container>
-          <SectionDivider />
-          <SectionHeader
-            index="05"
-            label="Testimonials"
-            title="Good work starts with trust."
-            titleClassName="max-w-[12ch]"
-            titleId="testimonials-title"
-          />
-          <div className="grid grid-cols-4 gap-x-4 md:grid-cols-8 md:gap-x-6 lg:grid-cols-12">
-            <div className="col-span-4 md:col-span-6 md:col-start-3 lg:col-span-9 lg:col-start-4">
-              {testimonials.length ? (
-                <div className="grid gap-12 lg:grid-cols-2">
-                  {testimonials.map((item) => (
-                    <figure
-                      key={`${item.personName}-${item.company}`}
-                      className="border-border border-t pt-5"
-                    >
-                      <blockquote className="text-subheading max-w-[28ch] font-medium">
-                        “{item.quote}”
-                      </blockquote>
-                      <figcaption className="text-muted-foreground mt-8 text-sm">
-                        <span className="text-foreground block font-medium">
-                          {item.personName}
-                        </span>
-                        {item.role} / {item.company}
-                      </figcaption>
-                    </figure>
+          <div className="mx-auto grid w-full max-w-[72rem] gap-8 md:grid-cols-3">
+            {technologyGroups.map((group) => (
+              <div key={group.label} className="border-border border-t pt-3">
+                <h3 className="text-label text-accent font-mono uppercase">
+                  {group.label}
+                </h3>
+                <ul className="mt-5 space-y-2">
+                  {group.items.map((item) => (
+                    <li key={item}>{item}</li>
                   ))}
-                </div>
-              ) : (
-                <p className="text-muted-foreground max-w-[45ch]">
-                  Client references are shared privately while verified public
-                  testimonials are being prepared.
-                </p>
-              )}
-            </div>
+                </ul>
+              </div>
+            ))}
           </div>
         </Container>
       </section>
@@ -328,19 +271,17 @@ export function HomePage({
           <Container>
             <SectionDivider />
             <SectionHeader
-              index="06"
+              index="05"
               label="Contact"
               title="Have something worth making?"
               titleClassName="max-w-[10ch]"
               titleId="contact-title"
             />
-            <div className="grid grid-cols-4 gap-x-4 md:grid-cols-8 md:gap-x-6 lg:grid-cols-12">
-              <div className="col-span-4 md:col-span-6 md:col-start-3 lg:col-span-8 lg:col-start-5">
-                <p className="text-lead text-muted-foreground max-w-[45ch]">
-                  Tell me what you are building, what needs to change, and where
-                  you want the work to go.
-                </p>
-              </div>
+            <div className="ml-home-copy-indent max-w-[45ch]">
+              <p className="text-home-lead text-muted-foreground">
+                Tell me what you are building, what needs to change, and where
+                you want the work to go.
+              </p>
             </div>
             <div className="mt-16 grid grid-cols-4 gap-x-4 gap-y-16 md:grid-cols-8 md:gap-x-6 lg:grid-cols-12">
               <HomeContactDetails settings={settings} />

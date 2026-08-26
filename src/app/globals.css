@@ -19,7 +19,7 @@
   --success: #7fc99d;
 
   --type-display: clamp(3.25rem, 8vw + 1rem, 9rem);
-  --type-hero-name: clamp(5rem, 17vw, 16rem);
+  --type-hero-name: clamp(5rem, min(18.5vw, 30vh), 20.25rem);
   --type-page-title: clamp(3rem, 5vw + 1rem, 7rem);
   --type-heading: clamp(2.25rem, 3vw + 1rem, 5rem);
   --type-section-heading: clamp(2rem, 3.2vw, 3.75rem);

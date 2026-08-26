@@ -67,7 +67,7 @@ export function HomePage({
           className="border-border flex min-h-[calc(100svh-var(--header-height))] border-b"
         >
           <Container className="flex">
-            <div className="flex w-full flex-col justify-between py-[clamp(2rem,5vw,4.5rem)]">
+            <div className="flex w-full flex-col py-[clamp(1.75rem,4.5vw,4rem)]">
               <div>
                 <p
                   className="text-hero-eyebrow text-label font-mono tracking-[0.14em] uppercase"
@@ -78,7 +78,7 @@ export function HomePage({
                 <h1
                   id="hero-title"
                   aria-label={displayName}
-                  className="text-hero-name mt-[clamp(1rem,2vw,1.75rem)] pl-[clamp(0.5rem,2vw,1.5rem)] font-[620]"
+                  className="text-hero-name mt-[clamp(1.25rem,2.6vh,2.25rem)] pl-[clamp(0.25rem,1.25vw,1.5rem)] font-[620]"
                 >
                   {nameWords.map((word) => (
                     <span
@@ -93,22 +93,24 @@ export function HomePage({
                 </h1>
               </div>
 
-              <div className="border-border mt-[clamp(3rem,7vw,7rem)] grid grid-cols-4 gap-x-4 gap-y-7 border-t pt-4 md:grid-cols-8 md:gap-x-6 lg:grid-cols-12">
-                <p
-                  className="text-label text-accent col-span-4 font-mono uppercase md:col-span-3 lg:col-span-3"
-                  data-hero-meta
-                >
-                  Independent developer / Design &amp; engineering
-                </p>
-                <p
-                  className="text-muted-foreground col-span-4 max-w-[43ch] leading-7 md:col-span-5 lg:col-span-4 lg:col-start-5"
-                  data-hero-support
-                >
-                  I design and build precise websites and digital products for
-                  teams whose work deserves a stronger presence.
-                </p>
+              <div className="border-border mt-auto grid grid-cols-4 gap-x-4 gap-y-7 border-t pt-4 md:grid-cols-8 md:gap-x-6 lg:grid-cols-12">
+                <div className="col-span-4 max-w-[40ch] md:col-span-5 lg:col-span-4">
+                  <p
+                    className="text-label text-accent font-mono uppercase"
+                    data-hero-meta
+                  >
+                    Independent developer / Design &amp; engineering
+                  </p>
+                  <p
+                    className="text-muted-foreground mt-3 leading-7"
+                    data-hero-support
+                  >
+                    I design and build precise websites and digital products for
+                    teams whose work deserves a stronger presence.
+                  </p>
+                </div>
                 <a
-                  className="group col-span-4 flex min-h-11 items-start justify-between gap-6 self-start font-mono text-sm font-medium uppercase no-underline md:col-span-5 md:col-start-4 lg:col-span-3 lg:col-start-10"
+                  className="group col-span-4 flex min-h-11 w-full items-center justify-between gap-3 self-end font-mono text-sm font-medium uppercase no-underline md:col-span-3 md:col-start-6 md:w-auto md:flex-col md:items-start md:justify-self-end lg:col-span-2 lg:col-start-11"
                   data-hero-support
                   href="#selected-projects"
                 >

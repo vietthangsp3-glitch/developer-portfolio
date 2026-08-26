@@ -11,15 +11,13 @@ export function PageIntro({ label, title, description }: PageIntroProps) {
   return (
     <header className="py-section-compact md:pb-section">
       <Container>
-        <div className="border-border grid grid-cols-4 gap-x-4 gap-y-10 border-t pt-4 md:grid-cols-8 md:gap-x-6 lg:grid-cols-12">
-          <SectionLabel className="col-span-4 md:col-span-2 lg:col-span-3">
-            {label}
-          </SectionLabel>
-          <div className="col-span-4 md:col-span-6 lg:col-span-9">
-            <h1 className="text-page-title max-w-[11ch] font-medium text-balance">
+        <div className="border-border border-t pt-4">
+          <SectionLabel>{label}</SectionLabel>
+          <div className="mt-[clamp(2rem,4vw,3.5rem)]">
+            <h1 className="text-page-title font-medium text-balance md:whitespace-nowrap">
               {title}
             </h1>
-            <p className="text-lead text-muted-foreground mt-8 max-w-[52ch] md:mt-12 md:ml-[16.666%]">
+            <p className="text-lead text-muted-foreground mt-[clamp(1.25rem,2.5vw,2rem)] max-w-[52ch]">
               {description}
             </p>
           </div>
